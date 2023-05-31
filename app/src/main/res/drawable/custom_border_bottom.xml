@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Set the background color of the TextView -->
+    <item android:drawable="@android:color/black" />
+
+    <!-- Set the border color and width for the bottom side -->
+    <item
+        android:bottom="2dp"
+        android:drawable="@android:color/white"
+        android:top="-2dp">
+    </item>
+
+</layer-list>

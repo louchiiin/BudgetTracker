@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BudgetTracker2</string>
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
+    <string name="home_title">Home</string>
+    <string name="transactions_title">Transaction</string>
+    <string name="accounts">Accounts</string>
+    <string name="category">Category</string>
+    <string name="save">Save</string>
+    <string name="continue_button">Continue</string>
+</resources>
