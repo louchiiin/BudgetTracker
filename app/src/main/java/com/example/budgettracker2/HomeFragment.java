@@ -25,6 +25,10 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class HomeFragment extends Fragment implements HomeActivity.TextUpdateListener{
     private FirebaseAuth mAuth;
     private DrawerLayout mSideMenu;

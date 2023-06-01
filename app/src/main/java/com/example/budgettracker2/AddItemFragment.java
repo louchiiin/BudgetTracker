@@ -5,11 +5,13 @@ import static com.example.budgettracker2.MainActivity.MY_TAG;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -25,6 +27,7 @@ import android.widget.TextView;
 
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.CategoryList;
+import com.example.budgettracker2.Model.Transactions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -44,6 +47,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.gson.Gson;
+
+import org.json.JSONObject;
 
 public class AddItemFragment extends Fragment implements DatePickerDialogFragment.OnSelectedDate{
     private View mConvertView;
@@ -71,6 +76,7 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     private int mOriginalDrawable;
     private int mClickedDrawable;
     private int mSelectedTransaction;
+    private Transactions mTransactions;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -132,11 +138,13 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
         mAmountView.setOnFocusChangeListener(mOnFocusChangeListener);
         mNoteView.setOnFocusChangeListener(mOnFocusChangeListener);
 
-
+        mTransactions = new Transactions();
+        Log.d(MY_TAG, "onCreateView: ");
         return mConvertView;
     }
 
-    private View.OnFocusChangeListener mOnFocusChangeListener = new View.OnFocusChangeListener() {
+    private final View.OnFocusChangeListener mOnFocusChangeListener = new View.OnFocusChangeListener() {
+        @SuppressLint("NonConstantResourceId")
         @Override
         public void onFocusChange(View view, boolean b) {
             switch (view.getId()) {
@@ -144,13 +152,17 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                 case R.id.amount_textView: {
                     mAccountsView.setVisibility(View.GONE);
                     mCategoryView.setVisibility(View.GONE);
+                    if(R.id.amount_textView == view.getId()) {
+                        mAmountView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_bottom, null));
+                    }
                     break;
                 }
             }
         }
     };
 
-    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
+    private final View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        @SuppressLint("NonConstantResourceId")
         @Override
         public void onClick(View view) {
             switch (view.getId()) {
@@ -162,7 +174,8 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     mExpenseBtn.setTextColor(getResources().getColor(R.color.black));
                     mTransferBtn.setTextColor(getResources().getColor(R.color.black));
                     mSelectedTransaction = EnumDeclarations.INCOME.getValue();
-                    Log.d("LOUCHIIIN", "income " + mSelectedTransaction);
+                    clearFields(false);
+                    mTransactions.setTransactionType(EnumDeclarations.INCOME.getValue());
                     break;
                 }
                 case R.id.expense_button: {
@@ -173,19 +186,20 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     mExpenseBtn.setTextColor(getResources().getColor(R.color.white));
                     mTransferBtn.setTextColor(getResources().getColor(R.color.black));
                     mSelectedTransaction = EnumDeclarations.EXPENSE.getValue();
-                    Log.d("LOUCHIIIN", "expense " + mSelectedTransaction);
+                    clearFields(false);
+                    mTransactions.setTransactionType(EnumDeclarations.EXPENSE.getValue());
                     break;
                 }
                 case R.id.transfer_button: {
                     mIncomeBtn.setBackgroundResource(mOriginalDrawable);
                     mExpenseBtn.setBackgroundResource(mOriginalDrawable);
                     mTransferBtn.setBackgroundResource(mClickedDrawable);
-                    mTransferBtn.setBackgroundResource(R.drawable.custom_button_black_stroke_red_fill);
                     mIncomeBtn.setTextColor(getResources().getColor(R.color.black));
                     mExpenseBtn.setTextColor(getResources().getColor(R.color.black));
                     mTransferBtn.setTextColor(getResources().getColor(R.color.white));
                     mSelectedTransaction = EnumDeclarations.TRANSFER.getValue();
-                    Log.d("LOUCHIIIN", "transfer " + mSelectedTransaction);
+                    clearFields(false);
+                    mTransactions.setTransactionType(EnumDeclarations.TRANSFER.getValue());
                     break;
                 }
                 case R.id.date_picker:{
@@ -202,6 +216,7 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     mCategoryView.setVisibility(View.GONE);
                     mAmountView.clearFocus();
                     mNoteView.clearFocus();
+                    mSelectAccount.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_bottom, null));
                     fetchAccount();
                     closeKeyboard();
                     break;
@@ -211,13 +226,10 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     mCategoryView.setVisibility(View.VISIBLE);
                     mAmountView.clearFocus();
                     mNoteView.clearFocus();
+                    mSelectCategory.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_bottom, null));
                     Log.d(MY_TAG, "select category");
                     fetchCategory();
                     closeKeyboard();
-                    break;
-                }
-                case R.id.edit_accounts_list: {
-                    Log.d(MY_TAG, "edit accounts");
                     break;
                 }
                 case R.id.close_accounts_list: {
@@ -226,6 +238,17 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     break;
                 }
                 case R.id.edit_category_list: {
+                    Log.d(MY_TAG, "edit category");
+                    //create Intent to EditActivity
+                    /*Intent intent = new Intent(getContext(), EditActivity.class);
+                    startActivity(intent);*/
+                    break;
+                }
+                case R.id.edit_accounts_list: {
+                    Log.d(MY_TAG, "edit accounts");
+                    //create Intent to EditActivity
+                    /*Intent intent = new Intent(getContext(), EditActivity.class);
+                    startActivity(intent);*/
                     break;
                 }
                 case R.id.close_category_list: {
@@ -250,17 +273,23 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     }
                     if (selectAccountText.equals("")) {
                         Log.d(MY_TAG, "account is required");
+                        mSelectAccount.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_focused, null));
                         mProgress.dismiss();
                     }
                     if (selectCategoryText.equals("")) {
                         Log.d(MY_TAG, "category is required");
+                        mSelectCategory.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_focused, null));
                         mProgress.dismiss();
                     }
                     if (amountText.equals("")) {
                         Log.d(MY_TAG, "amount is required");
+                        mAmountView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_focused, null));
                         mProgress.dismiss();
                     }
-                    if(!datePickerText.equals("mm/dd/yyyy") && !selectAccountText.equals("")
+                    if(mSelectedTransaction == 0) {
+                        Log.d(MY_TAG, "select a transaction type");
+                    }
+                    if(mSelectedTransaction != 0 && !datePickerText.equals("mm/dd/yyyy") && !selectAccountText.equals("")
                             && !selectCategoryText.equals("") && !amountText.equals("")) {
                         saveTransaction();
                     }
@@ -313,7 +342,7 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                         // Data successfully saved
                         // Perform any additional operations if needed
                         mProgress.dismiss();
-                        clearFields();
+                        clearFields(true);
                         Log.d(MY_TAG, "Successfully Saved");
                     }
                 })
@@ -328,21 +357,29 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                 });
     }
 
-    private void clearFields() {
-        mDatePickerTextView.setText("");
-        mSelectAccount.setText("");
-        mSelectCategory.setText("");
-        mAmountView.setText("");
-        mNoteView.setText("");
-        mDescriptionView.setText("");
+    private void clearFields(boolean isClearAll) {
+        if(mSelectedTransaction != mTransactions.getTransactionType()) {
+            mDatePickerTextView.setText("");
+            mSelectAccount.setText("");
+            mSelectCategory.setText("");
+            mAmountView.setText("");
+            mNoteView.setText("");
+            mDescriptionView.setText("");
+        }
 
-        mIncomeBtn.setBackgroundResource(mOriginalDrawable);
-        mExpenseBtn.setBackgroundResource(mOriginalDrawable);
-        mTransferBtn.setBackgroundResource(mOriginalDrawable);
-        mIncomeBtn.setTextColor(getResources().getColor(R.color.black));
-        mExpenseBtn.setTextColor(getResources().getColor(R.color.black));
-        mTransferBtn.setTextColor(getResources().getColor(R.color.black));
-        mSelectedTransaction = 0;
+        mSelectAccount.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_bottom, null));
+        mSelectCategory.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_bottom, null));
+        mAmountView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_bottom, null));
+
+        if(isClearAll) {
+            mSelectedTransaction = 0;
+            mIncomeBtn.setBackgroundResource(mOriginalDrawable);
+            mExpenseBtn.setBackgroundResource(mOriginalDrawable);
+            mTransferBtn.setBackgroundResource(mOriginalDrawable);
+            mIncomeBtn.setTextColor(getResources().getColor(R.color.black));
+            mExpenseBtn.setTextColor(getResources().getColor(R.color.black));
+            mTransferBtn.setTextColor(getResources().getColor(R.color.black));
+        }
     }
 
     private void fetchCategory() {
@@ -415,7 +452,7 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isAccount) {
+                if (isAccount) {
                     mSelectAccount.setText(buttonText);
                 } else {
                     mSelectCategory.setText(buttonText);
