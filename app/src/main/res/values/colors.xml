@@ -11,4 +11,5 @@
     <color name="blue">#87c6eb</color>
     <color name="vermillion">#E34234</color>
     <color name="red">#FF0000</color>
+    <color name="gray_80">#CCCCCC</color>
 </resources>

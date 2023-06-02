@@ -51,6 +51,8 @@ import com.google.gson.Gson;
 import org.json.JSONObject;
 
 public class AddItemFragment extends Fragment implements DatePickerDialogFragment.OnSelectedDate{
+    public static String ACCOUNTS_TYPE = "accounts_type";
+    public static String CATEGORY_TYPE = "category_type";
     private View mConvertView;
     private TextView mDatePickerTextView;
     private TextView mSelectAccount;
@@ -239,16 +241,25 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                 }
                 case R.id.edit_category_list: {
                     Log.d(MY_TAG, "edit category");
-                    //create Intent to EditActivity
-                    /*Intent intent = new Intent(getContext(), EditActivity.class);
-                    startActivity(intent);*/
+                    if(getActivity() != null) {
+                        Intent intent = new Intent(getActivity(), EditActivity.class);
+                        intent.putExtra("header_title", "Edit Category");
+                        intent.putExtra("transaction_type", CATEGORY_TYPE);
+                        startActivity(intent);
+                        getActivity().overridePendingTransition(R.anim.slide_in, R.anim.fade_out);
+                    }
                     break;
                 }
                 case R.id.edit_accounts_list: {
                     Log.d(MY_TAG, "edit accounts");
                     //create Intent to EditActivity
-                    /*Intent intent = new Intent(getContext(), EditActivity.class);
-                    startActivity(intent);*/
+                    if(getActivity() != null) {
+                        Intent intent = new Intent(getActivity(), EditActivity.class);
+                        intent.putExtra("header_title", "Edit Accounts");
+                        intent.putExtra("transaction_type", ACCOUNTS_TYPE);
+                        startActivity(intent);
+                        getActivity().overridePendingTransition(R.anim.slide_in, R.anim.fade_out);
+                    }
                     break;
                 }
                 case R.id.close_category_list: {
