@@ -1,5 +1,7 @@
 package com.example.budgettracker2;
 
+import static com.example.budgettracker2.MainActivity.MY_TAG;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,24 +12,17 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
 
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class HomeFragment extends Fragment implements HomeActivity.TextUpdateListener{
     private FirebaseAuth mAuth;
@@ -71,7 +66,7 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
                         break;
                     case R.id.menu_logout:
                         // Handle click on menu item 3
-                        Log.d(MainActivity.MY_TAG, "menu_logout");
+                        Log.d(MY_TAG, "menu_logout");
                         if(getActivity() != null) {
                             mAuth.signOut();
                             Intent intent = new Intent(getActivity(), MainActivity.class);
@@ -109,14 +104,14 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
         public void onClick(View view) {
             switch(view.getId()){
                 case R.id.actionBar_open_sideMenu: {
-                    Log.d(MainActivity.MY_TAG, "sidemenu");
+                    Log.d(MY_TAG, "sidemenu");
                     if(mSideMenu != null && mNavigationView != null) {
                         mSideMenu.openDrawer(mNavigationView);
                     }
                     break;
                 }
                 case R.id.actionBar_add: {
-                    Log.d(MainActivity.MY_TAG, "add");
+                    Log.d(MY_TAG, "add");
                     if(getActivity() != null) {
                         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                         Fragment addItemFrag = fragmentManager.findFragmentByTag(ADD_ITEM_FRAGMENT);
@@ -128,6 +123,7 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
                             fragmentTransaction.commit();
                         }
                     }
+                    mAddButton.setVisibility(View.GONE);
                     mHeaderTitle.setText(getString(R.string.transactions_title));
                     break;
                 }
@@ -155,5 +151,10 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
     @Override
     public void onUpdateText(String newText) {
         mHeaderTitle.setText(newText);
+    }
+
+    public void onBack(){
+        Log.d(MY_TAG, "onBack: ");
+        mAddButton.setVisibility(View.VISIBLE);
     }
 }

@@ -78,6 +78,11 @@ public class HomeActivity extends AppCompatActivity {
                 TextUpdateListener listener = (TextUpdateListener) currentFragment;
                 listener.onUpdateText(getString(R.string.home_title));
             }
+
+            if(currentFragment instanceof HomeFragment) {
+                HomeFragment homeFragment = (HomeFragment) currentFragment;
+                homeFragment.onBack();
+            }
         }
     }
 }

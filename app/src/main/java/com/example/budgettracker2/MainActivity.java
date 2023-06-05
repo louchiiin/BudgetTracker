@@ -76,16 +76,6 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.sign_in_button:{
-                    /*FirebaseApp defaultApp = FirebaseApp.getInstance("DEFAULT");
-                    if (defaultApp != null) {
-                        defaultApp.delete();
-                    }*/
-                    /*FirebaseOptions options = new FirebaseOptions.Builder()
-                            .setApiKey("AIzaSyCZKwK8jX8gpyYOWXbCE1yephKU2s-0MhQ")
-                            .setApplicationId("YOUR_APPLICATION_ID")
-                            .setProjectId("budgettracker2-4533f")
-                            .build();
-                    FirebaseApp.initializeApp(MainActivity.this, options, "BudgetTracker2");*/
                     signInUser();
                     break;
                 }

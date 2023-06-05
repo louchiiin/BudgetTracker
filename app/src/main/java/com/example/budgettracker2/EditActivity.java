@@ -3,6 +3,8 @@ package com.example.budgettracker2;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -47,11 +49,12 @@ public class EditActivity extends AppCompatActivity {
             mTransactionType = bundle.getString("transaction_type");
         }
 
+        mCloseButton.setOnClickListener(mOnClickListener);
+        mAddButton.setOnClickListener(mOnClickListener);
         //initialize header
         initializeHeader();
         initializeRecyclerViewAdapter();
 
-        mCloseButton.setOnClickListener(mOnClickListener);
     }
 
     private void initializeRecyclerViewAdapter() {
@@ -65,7 +68,6 @@ public class EditActivity extends AppCompatActivity {
 
     private void initializeHeader() {
         mHeaderTitle.setText(mTitle);
-        mAddButton.setVisibility(View.GONE);
         mCloseButton.setImageResource(R.drawable.ic_back_black);
     }
 
@@ -73,18 +75,31 @@ public class EditActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.actionBar_open_sideMenu:
+                case R.id.actionBar_open_sideMenu: {
+                    Intent resultIntent = new Intent();
+                    // Set any result data you want to pass back to the calling fragment
+                    setResult(Activity.RESULT_OK, resultIntent);
                     finish();
                     overridePendingTransition(R.anim.slide_out, 0);
                     break;
+                }
+                case R.id.actionBar_add: {
+                    //create intent to edit activity
+                    Intent intent = new Intent(getApplicationContext(), AddActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.slide_in, R.anim.fade_out);
+                    break;
+                }
             }
         }
     };
 
     @Override
     public void onBackPressed() {
+        Intent resultIntent = new Intent();
+        // Set any result data you want to pass back to the calling fragment
+        setResult(Activity.RESULT_OK, resultIntent);
         super.onBackPressed();
-        finish();
         overridePendingTransition(R.anim.slide_out, 0);
     }
 }

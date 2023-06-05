@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity"
-    android:background="@color/white"
-    android:padding="10dp">
+    android:background="@color/blue">
 
     <View
         android:id="@+id/top_spacer"
@@ -24,10 +23,11 @@
         android:hint="Please enter your Email"
         android:imeOptions="actionNext"
         android:inputType="textEmailAddress"
-        android:padding="5dp"
+        android:padding="10dp"
         android:textColorHint="@color/black"
         android:textSize="16sp"
         android:textColor="@color/black"
+        android:layout_marginHorizontal="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_spacer" />
@@ -43,8 +43,9 @@
         android:inputType="textPassword"
         android:imeOptions="actionSend"
         android:textColorHint="@color/black"
+        android:layout_marginHorizontal="15dp"
         android:background="@drawable/custom_edit_text"
-        android:padding="5dp"
+        android:padding="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -58,6 +59,7 @@
         android:layout_marginTop="20dp"
         android:text="Sign in"
         android:textColor="@color/black"
+        android:layout_marginHorizontal="15dp"
         android:background="@drawable/custom_button_black_stroke_white_fill"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"

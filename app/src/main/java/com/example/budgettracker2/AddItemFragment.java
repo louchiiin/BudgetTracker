@@ -3,12 +3,15 @@ package com.example.budgettracker2;
 import static com.example.budgettracker2.MainActivity.MY_TAG;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.res.ResourcesCompat;
@@ -79,6 +82,7 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     private int mClickedDrawable;
     private int mSelectedTransaction;
     private Transactions mTransactions;
+    private ActivityResultLauncher<Intent> mLauncher;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -142,6 +146,13 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
 
         mTransactions = new Transactions();
         Log.d(MY_TAG, "onCreateView: ");
+        mLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                Log.d(MY_TAG, "registerForActivityResult: result ok");
+                fetchAccount();
+                fetchCategory();
+            }
+        });
         return mConvertView;
     }
 
@@ -245,7 +256,7 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                         Intent intent = new Intent(getActivity(), EditActivity.class);
                         intent.putExtra("header_title", "Edit Category");
                         intent.putExtra("transaction_type", CATEGORY_TYPE);
-                        startActivity(intent);
+                        mLauncher.launch(intent);
                         getActivity().overridePendingTransition(R.anim.slide_in, R.anim.fade_out);
                     }
                     break;
@@ -394,7 +405,8 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     }
 
     private void fetchCategory() {
-        ArrayList<CategoryList> categoryLists = mCategoryOptionsManager.mCategoryList;
+        ArrayList<CategoryList> categoryLists = new ArrayList<CategoryList>();
+        categoryLists = mCategoryOptionsManager.mCategoryList;
         mCategoryChildView.removeAllViews();
 
         // Fetch list account if null or empty
@@ -416,7 +428,8 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     }
 
     private void fetchAccount() {
-        ArrayList<AccountsList> listAccounts = mCategoryOptionsManager.mListAccounts;
+        ArrayList<AccountsList> listAccounts = new ArrayList<AccountsList>();
+        listAccounts = mCategoryOptionsManager.mListAccounts;
         mAccountsChildView.removeAllViews();
 
         // Fetch list account if null or empty
