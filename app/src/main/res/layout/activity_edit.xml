@@ -33,5 +33,4 @@
                 tools:itemCount="10"/>
         </LinearLayout>
     </FrameLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

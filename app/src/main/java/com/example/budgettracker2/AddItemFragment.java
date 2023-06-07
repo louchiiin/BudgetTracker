@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.CategoryList;
 import com.example.budgettracker2.Model.Transactions;
+import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -83,6 +84,10 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     private int mSelectedTransaction;
     private Transactions mTransactions;
     private ActivityResultLauncher<Intent> mLauncher;
+    private SpinKitView mAccountLoadingView;
+    private SpinKitView mCategoryLoadingView;
+    private boolean mIsAccountLoading = false;
+    private boolean mIsCategoryLoading = false;
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -93,6 +98,8 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
 
         mCategoryOptionsManager = CategoryOptionsManager.getInstance();
 
+        mAccountLoadingView = mConvertView.findViewById(R.id.loading_spin_kit_account);
+        mCategoryLoadingView = mConvertView.findViewById(R.id.loading_spin_kit_category);
         mDatePickerTextView = mConvertView.findViewById(R.id.date_picker);
         mSelectAccount = mConvertView.findViewById(R.id.select_account);
         mSelectCategory = mConvertView.findViewById(R.id.select_category);
@@ -405,16 +412,22 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     }
 
     private void fetchCategory() {
+        if(mIsCategoryLoading)  {
+            return;
+        }
         ArrayList<CategoryList> categoryLists = new ArrayList<CategoryList>();
         categoryLists = mCategoryOptionsManager.mCategoryList;
         mCategoryChildView.removeAllViews();
-
+        mIsCategoryLoading = true;
         // Fetch list account if null or empty
         if (categoryLists == null || categoryLists.isEmpty()) {
+            mCategoryLoadingView.setVisibility(View.VISIBLE);
             mCategoryOptionsManager.requestFetchCategory(new ManagerCallback() {
                 @Override
                 public void onFinish() {
                     populateCategoryButtons(mCategoryOptionsManager.mCategoryList);
+                    mCategoryLoadingView.setVisibility(View.GONE);
+                    mIsCategoryLoading = false;
                 }
 
                 @Override
@@ -428,16 +441,23 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     }
 
     private void fetchAccount() {
+        if(mIsAccountLoading) {
+            return;
+        }
         ArrayList<AccountsList> listAccounts = new ArrayList<AccountsList>();
         listAccounts = mCategoryOptionsManager.mListAccounts;
         mAccountsChildView.removeAllViews();
+        mIsAccountLoading = true;
 
         // Fetch list account if null or empty
         if (listAccounts == null || listAccounts.isEmpty()) {
+            mAccountLoadingView.setVisibility(View.VISIBLE);
             mCategoryOptionsManager.requestFetchAccount(new ManagerCallback() {
                 @Override
                 public void onFinish() {
                     populateAccountButtons(mCategoryOptionsManager.mListAccounts);
+                    mAccountLoadingView.setVisibility(View.GONE);
+                    mIsAccountLoading = false;
                 }
 
                 @Override
