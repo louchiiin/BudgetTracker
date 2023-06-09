@@ -107,6 +107,9 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.ViewHolder>{
         holder.mSaveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (mOnUpdateListener != null) {
+                    mOnUpdateListener.onLoadingShow();
+                }
                 closeKeyboard(true, view, null);
 
                 holder.mItemName.clearFocus();
@@ -118,6 +121,11 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.ViewHolder>{
                         for (DataSnapshot ds: dataSnapshot.getChildren()) {
                             ds.getRef().setValue(holder.mItemName.getText().toString());
                         }
+
+                        if (mOnUpdateListener != null) {
+                            mOnUpdateListener.onUpdate();
+                        }
+
                         holder.mItemName.clearFocus();
                         isUpdating(false, holder);
                     }
