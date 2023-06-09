@@ -2,11 +2,14 @@ package com.example.budgettracker2;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mEmailTextView;
     private TextView mPasswordTextView;
     private Button mSignIn;
-
+    private ConstraintLayout mLoadingView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         //initialize firebase auth
         mFirebaseAuth = FirebaseAuth.getInstance();
 
+        mLoadingView = findViewById(R.id.loading_view);
         mEmailTextView = findViewById(R.id.email_address_textView);
         mPasswordTextView = findViewById(R.id.password_textView);
         mSignIn = findViewById(R.id.sign_in_button);
@@ -76,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.sign_in_button:{
+                    mLoadingView.setVisibility(View.VISIBLE);
                     signInUser();
                     break;
                 }
@@ -100,15 +105,19 @@ public class MainActivity extends AppCompatActivity {
             if (!matcher.matches()){
                 // The text in the EditText is not a valid email address
                 Log.d(MY_TAG, "email is not a valid email address");
+                mLoadingView.setVisibility(View.GONE);
             } else if(email.isEmpty()){
                 Log.d(MY_TAG, "email is blank ");
+                mLoadingView.setVisibility(View.GONE);
             } else if (password.isEmpty()) {
                 Log.d(MY_TAG, "password is blank ");
+                mLoadingView.setVisibility(View.GONE);
             } else {
                 mFirebaseAuth.signInWithEmailAndPassword(email, password)
                         .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
+                                mLoadingView.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(MY_TAG, "signInWithEmail:success");
@@ -132,6 +141,15 @@ public class MainActivity extends AppCompatActivity {
                         });
 
             }
+            closeKeyboard();
+        }
+    }
+
+    private void closeKeyboard() {
+        View view = getWindow().getDecorView().getRootView();
+        if (view != null) {
+            InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            manager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 }

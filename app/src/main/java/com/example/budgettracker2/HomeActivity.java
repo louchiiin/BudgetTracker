@@ -55,20 +55,7 @@ public class HomeActivity extends AppCompatActivity {
         int count = getSupportFragmentManager().getBackStackEntryCount();
 
         if (count == 1) {
-            new AlertDialog.Builder(HomeActivity.this)
-                .setTitle("Alert")
-                .setMessage("Are you sure you want to exit?")
-                .setNegativeButton(android.R.string.no, null)
-                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface arg0, int arg1) {
-                        FirebaseAuth.getInstance().signOut();
-                        Intent loggedOut = new Intent(HomeActivity.this, MainActivity.class);
-                        startActivity(loggedOut);
-                        setResult(RESULT_OK, new Intent().putExtra("EXIT", true));
-                        finish();
-                    }
-                }).create().show();
+            createDialogExit();
         } else {
             getSupportFragmentManager().popBackStack();
             Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(HOME_FRAGMENT);
@@ -84,5 +71,22 @@ public class HomeActivity extends AppCompatActivity {
                 homeFragment.onBack();
             }
         }
+    }
+
+    private void createDialogExit() {
+        new AlertDialog.Builder(HomeActivity.this)
+                .setTitle("Alert")
+                .setMessage("Are you sure you want to exit?")
+                .setNegativeButton(android.R.string.no, null)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        FirebaseAuth.getInstance().signOut();
+                        Intent loggedOut = new Intent(HomeActivity.this, MainActivity.class);
+                        startActivity(loggedOut);
+                        setResult(RESULT_OK, new Intent().putExtra("EXIT", true));
+                        finish();
+                    }
+                }).create().show();
     }
 }
