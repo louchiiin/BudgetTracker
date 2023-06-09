@@ -1,5 +1,7 @@
 package com.example.budgettracker2;
 
+import static com.example.budgettracker2.MainActivity.MY_TAG;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -18,11 +20,7 @@ public class HomeActivity extends AppCompatActivity {
         void onUpdateText(String newText);
     }
     private String HOME_FRAGMENT = "home_fragment";
-
-    private TextUpdateListener textUpdateListener;
-    public void setTextUpdateListener(TextUpdateListener listener) {
-        this.textUpdateListener = listener;
-    }
+    private HomeFragment mHomeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +41,7 @@ public class HomeActivity extends AppCompatActivity {
         if(getIntent() != null) {
             String currentIdUser = getIntent().getStringExtra((MainActivity.FIREBASE_USER_ID));
             String currentEmailUser = getIntent().getStringExtra((MainActivity.FIREBASE_USER_EMAIL));
-            Log.d(MainActivity.MY_TAG, "firebaseName " + currentIdUser + " " + currentEmailUser);
+            Log.d(MY_TAG, "firebaseName " + currentIdUser + " " + currentEmailUser);
             //set on shared preference
             CacheManager.getInstance(getApplicationContext()).setCurrentId(currentIdUser);
             CacheManager.getInstance(getApplicationContext()).setCurrentEmail(currentEmailUser);
@@ -54,22 +52,24 @@ public class HomeActivity extends AppCompatActivity {
     public void onBackPressed() {
         int count = getSupportFragmentManager().getBackStackEntryCount();
 
-        if (count == 1) {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(HOME_FRAGMENT);
+        if(currentFragment instanceof HomeFragment) {
+            mHomeFragment = (HomeFragment) currentFragment;
+        }
+
+        if (count == 1 && !mHomeFragment.isSideMenuOpen()) {
             createDialogExit();
+        } else if(mHomeFragment.isSideMenuOpen()) {
+            mHomeFragment.closeSideMenu();
         } else {
             getSupportFragmentManager().popBackStack();
-            Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(HOME_FRAGMENT);
 
             if (currentFragment instanceof TextUpdateListener) {
                 // Call the onUpdateText() method in the current fragment via the listener
                 TextUpdateListener listener = (TextUpdateListener) currentFragment;
                 listener.onUpdateText(getString(R.string.home_title));
             }
-
-            if(currentFragment instanceof HomeFragment) {
-                HomeFragment homeFragment = (HomeFragment) currentFragment;
-                homeFragment.onBack();
-            }
+            mHomeFragment.onBack();
         }
     }
 

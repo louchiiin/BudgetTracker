@@ -150,16 +150,6 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
     }
 
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-
-        if (context instanceof HomeActivity) {
-            HomeActivity activity = (HomeActivity) context;
-            activity.setTextUpdateListener(this);
-        }
-    }
-
-    @Override
     public void onUpdateText(String newText) {
         mHeaderTitle.setText(newText);
     }
@@ -167,5 +157,13 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
     public void onBack(){
         Log.d(MY_TAG, "onBack: ");
         mAddButton.setVisibility(View.VISIBLE);
+    }
+
+    public boolean isSideMenuOpen(){
+        return mSideMenu.isDrawerOpen(GravityCompat.START);
+    }
+
+    public void closeSideMenu(){
+        mSideMenu.closeDrawer(GravityCompat.START);
     }
 }
