@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -12,10 +12,13 @@
         android:id="@+id/transaction_buttons_container"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:orientation="horizontal"
-        android:layout_marginTop="10dp"
         android:layout_gravity="center_vertical"
-        android:layout_marginHorizontal="10dp">
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <Button
             android:id="@+id/income_button"
@@ -23,15 +26,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:background="@drawable/custom_button_black_stroke_white_fill"
-            app:backgroundTint="@null"
             android:maxLines="1"
-            android:textSize="12sp"
             android:text="Income"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:backgroundTint="@null" />
 
         <View
             android:layout_width="5dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/expense_button"
@@ -39,15 +42,15 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:background="@drawable/custom_button_black_stroke_white_fill"
-            app:backgroundTint="@null"
             android:maxLines="1"
-            android:textSize="12sp"
             android:text="Expenses"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:backgroundTint="@null" />
 
         <View
             android:layout_width="5dp"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/transfer_button"
@@ -55,20 +58,24 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
             android:background="@drawable/custom_button_black_stroke_white_fill"
-            app:backgroundTint="@null"
             android:maxLines="1"
-            android:textSize="12sp"
             android:text="Transfer"
-            android:textColor="@color/black"/>
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            app:backgroundTint="@null" />
     </LinearLayout>
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="10dp"
-        app:cardElevation="20dp">
+        app:cardElevation="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/transaction_buttons_container">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -80,8 +87,8 @@
                 android:id="@+id/date_container"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
@@ -93,7 +100,7 @@
 
                 <View
                     android:layout_width="10dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent" />
 
                 <TextView
                     android:id="@+id/date_picker"
@@ -101,8 +108,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
                     android:background="@drawable/custom_border_bottom"
-                    android:padding="10dp"
                     android:gravity="center_vertical"
+                    android:padding="10dp"
                     android:textColor="@color/black"
                     android:textSize="16sp"
                     app:drawableRightCompat="@drawable/ic_calendar" />
@@ -110,25 +117,27 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="10dp"/>
+                android:layout_height="10dp" />
 
             <LinearLayout
                 android:id="@+id/account_container"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
                 <TextView
+                    android:id="@+id/account_textView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:text="Account"
+                    android:text="@string/accounts"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
                 <View
                     android:layout_width="10dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent" />
 
                 <TextView
                     android:id="@+id/select_account"
@@ -136,33 +145,35 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
                     android:background="@drawable/custom_border_bottom"
-                    android:padding="10dp"
-                    android:textSize="16sp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black" />
+                    android:padding="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="10dp"/>
+                android:layout_height="10dp" />
 
             <LinearLayout
                 android:id="@+id/category_container"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
                 <TextView
+                    android:id="@+id/category_textView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:text="Category"
+                    android:text="@string/category"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
                 <View
                     android:layout_width="10dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent" />
 
                 <TextView
                     android:id="@+id/select_category"
@@ -170,23 +181,23 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
                     android:background="@drawable/custom_border_bottom"
-                    android:padding="10dp"
-                    android:textSize="16sp"
                     android:gravity="center_vertical"
-                    android:textColor="@color/black" />
+                    android:padding="10dp"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="10dp"/>
+                android:layout_height="10dp" />
 
             <LinearLayout
                 android:id="@+id/amount_container"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
@@ -198,33 +209,34 @@
 
                 <View
                     android:layout_width="10dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent" />
 
                 <EditText
                     android:id="@+id/amount_textView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
-                    android:textColorHint="@color/gray"
                     android:background="@drawable/custom_border_bottom"
-                    android:padding="10dp"
-                    android:inputType="number"
                     android:hint="Enter Amount"
+                    android:inputType="number"
+                    android:padding="10dp"
                     android:textColor="@color/black"
+                    android:textColorHint="@color/gray"
                     android:textCursorDrawable="@drawable/custom_cursor"
                     android:textSize="16sp" />
             </LinearLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="10dp"/>
+                android:layout_height="10dp" />
 
             <LinearLayout
                 android:id="@+id/note_container"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -235,19 +247,19 @@
 
                 <View
                     android:layout_width="10dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent" />
 
                 <EditText
                     android:id="@+id/note_textView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.5"
-                    android:hint="Enter Note"
                     android:background="@drawable/custom_border_bottom"
-                    android:padding="10dp"
+                    android:hint="Enter Note"
                     android:inputType="text"
-                    android:textColorHint="@color/gray"
+                    android:padding="10dp"
                     android:textColor="@color/black"
+                    android:textColorHint="@color/gray"
                     android:textCursorDrawable="@drawable/custom_cursor"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -258,13 +270,17 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/bottom_layout_addItem_account"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_marginVertical="10dp"
         android:layout_marginHorizontal="10dp"
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="10dp"
         app:cardElevation="20dp"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -327,15 +343,25 @@
                     app:layout_constraintTop_toTopOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.example.budgettracker2.CustomMaxWidthFrameLayout
-                android:id="@+id/account_child_layout_account"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="6dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/account_header" />
+                app:layout_constraintTop_toBottomOf="@+id/account_header">
+
+                <com.example.budgettracker2.CustomMaxWidthFrameLayout
+                    android:id="@+id/account_child_layout_account"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="6dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/account_header" />
+            </ScrollView>
+
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -346,14 +372,17 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/bottom_layout_addItem_category"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:layout_marginVertical="10dp"
         android:layout_marginHorizontal="10dp"
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="10dp"
         app:cardElevation="20dp"
-        tools:visibility="visible"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -416,15 +445,24 @@
                     app:layout_constraintTop_toTopOf="parent"/>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.example.budgettracker2.CustomMaxWidthFrameLayout
-                android:id="@+id/account_child_layout_category"
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingHorizontal="8dp"
-                android:paddingVertical="6dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/category_header" />
+                app:layout_constraintTop_toBottomOf="@+id/category_header">
+
+                <com.example.budgettracker2.CustomMaxWidthFrameLayout
+                    android:id="@+id/account_child_layout_category"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="6dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/category_header" />
+            </ScrollView>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -435,12 +473,16 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/bottom_layout_saveItem"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginVertical="10dp"
+        android:layout_height="0dp"
         android:layout_marginHorizontal="10dp"
+        android:layout_marginVertical="10dp"
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="10dp"
-        app:cardElevation="20dp">
+        app:cardElevation="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cardView">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -452,11 +494,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginVertical="10dp"
-                android:hint="Enter Description"
                 android:background="@drawable/custom_border_bottom"
+                android:hint="Enter Description"
                 android:inputType="text"
-                android:textColorHint="@color/gray"
                 android:textColor="@color/black"
+                android:textColorHint="@color/gray"
                 android:textCursorDrawable="@drawable/custom_cursor"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -478,10 +520,10 @@
                     android:layout_marginEnd="5dp"
                     android:layout_marginRight="5dp"
                     android:layout_weight="1"
+                    android:background="@drawable/custom_button_black_stroke_white_fill"
                     android:text="@string/save"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
-                    android:background="@drawable/custom_button_black_stroke_white_fill"
                     app:backgroundTint="@null" />
 
                 <Button
@@ -491,13 +533,36 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginLeft="5dp"
                     android:layout_weight="1"
+                    android:background="@drawable/custom_button_black_stroke_white_fill"
                     android:text="@string/continue_button"
                     android:textAllCaps="false"
                     android:textColor="@color/black"
-                    android:background="@drawable/custom_button_black_stroke_white_fill"
-                    app:backgroundTint="@null"/>
+                    app:backgroundTint="@null" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-</LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/full_loading_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/translucent_black"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="20dp"
+        android:visibility="gone">
+
+        <com.github.ybq.android.spinkit.SpinKitView
+            android:id="@+id/spinkit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:SpinKit_Color="@color/white"
+            style="@style/SpinKitView.CubeGrid" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

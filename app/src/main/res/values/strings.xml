@@ -3,9 +3,15 @@
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
     <string name="home_title">Home</string>
+    <string name="income_title">Income</string>
+    <string name="expenses_title">Expenses</string>
+    <string name="transfer_title">Transfer</string>
     <string name="transactions_title">Transaction</string>
     <string name="accounts">Accounts</string>
     <string name="category">Category</string>
     <string name="save">Save</string>
     <string name="continue_button">Continue</string>
+    <string name="common_from">From</string>
+    <string name="common_to">To</string>
+    <string name="common_add">Add</string>
 </resources>

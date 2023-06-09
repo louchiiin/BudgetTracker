@@ -1,6 +1,11 @@
 package com.example.budgettracker2;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
@@ -8,18 +13,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.CategoryList;
-import com.example.budgettracker2.Model.Transactions;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-public class EditActivity extends AppCompatActivity {
+public class EditActivity extends AppCompatActivity implements EditAdapter.OnUpdateListener{
 
     private ImageView mCloseButton;
     private ImageView mAddButton;
@@ -29,6 +32,8 @@ public class EditActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private EditAdapter mEditAdapter;
     private CategoryOptionsManager mCategoryOptionsManager;
+    private ActivityResultContract<Intent, ActivityResult> mEditActivityContract = new ActivityResultContracts.StartActivityForResult();
+    private ConstraintLayout mLoadingView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +46,7 @@ public class EditActivity extends AppCompatActivity {
         mAddButton = findViewById(R.id.actionBar_add);
         mHeaderTitle = findViewById(R.id.actionBar_title);
         mRecyclerView = findViewById(R.id.edit_recyclerView);
+        mLoadingView = findViewById(R.id.full_loading_view);
 
         //get intent
         Bundle bundle = getIntent().getExtras();
@@ -54,15 +60,13 @@ public class EditActivity extends AppCompatActivity {
         //initialize header
         initializeHeader();
         initializeRecyclerViewAdapter();
-
     }
 
     private void initializeRecyclerViewAdapter() {
-        ArrayList<AccountsList> accountsLists = mCategoryOptionsManager.mListAccounts;
-        ArrayList<CategoryList> categoryLists = mCategoryOptionsManager.mCategoryList;
+        ArrayList<AccountsList> accountsLists = mCategoryOptionsManager.mAccountsList;
+        ArrayList<CategoryList> categoryLists = mCategoryOptionsManager.mCategoriesList;
 
-        Log.d(MainActivity.MY_TAG, "test " + mTransactionType);
-        mEditAdapter = new EditAdapter(this, mTransactionType.equals(AddItemFragment.ACCOUNTS_TYPE) ? accountsLists : categoryLists);
+        mEditAdapter = new EditAdapter(this, mTransactionType.equals(Constants.ACCOUNTS_TYPE) ? accountsLists : categoryLists, this);
         mRecyclerView.setAdapter(mEditAdapter);
     }
 
@@ -76,17 +80,15 @@ public class EditActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.actionBar_open_sideMenu: {
-                    Intent resultIntent = new Intent();
-                    // Set any result data you want to pass back to the calling fragment
-                    setResult(Activity.RESULT_OK, resultIntent);
+                    setResult(Activity.RESULT_OK);
                     finish();
                     overridePendingTransition(R.anim.slide_out, 0);
                     break;
                 }
                 case R.id.actionBar_add: {
-                    //create intent to edit activity
                     Intent intent = new Intent(getApplicationContext(), AddActivity.class);
-                    startActivity(intent);
+                    intent.putExtra("category_type", mTransactionType);
+                    mEditActivityLauncher.launch(intent);
                     overridePendingTransition(R.anim.slide_in, R.anim.fade_out);
                     break;
                 }
@@ -101,5 +103,55 @@ public class EditActivity extends AppCompatActivity {
         setResult(Activity.RESULT_OK, resultIntent);
         super.onBackPressed();
         overridePendingTransition(R.anim.slide_out, 0);
+    }
+
+    ActivityResultLauncher<Intent> mEditActivityLauncher = registerForActivityResult(mEditActivityContract, result -> {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            // Handle the result here
+            Intent data = result.getData();
+            // Process the data from EditActivity
+            if (data != null) {
+                String categoryType = data.getStringExtra("category_type");
+                if(categoryType.equals(Constants.CATEGORY_TYPE)) {
+                    mCategoryOptionsManager.requestFetchCategory(new ManagerCallback() {
+                        @Override
+                        public void onFinish() {
+                            Log.d("LOUCHIIIN", "onFinish: Category " + new Gson().toJson(mCategoryOptionsManager.mCategoriesList));
+                            initializeRecyclerViewAdapter();
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            Log.d("LOUCHIIIN", "onError");
+                        }
+                    });
+                } else {
+                    mCategoryOptionsManager.requestFetchAccount(new ManagerCallback() {
+                        @Override
+                        public void onFinish() {
+                            Log.d("LOUCHIIIN", "onFinish: Accounts " + new Gson().toJson(mCategoryOptionsManager.mAccountsList));
+                            initializeRecyclerViewAdapter();
+                        }
+
+                        @Override
+                        public void onError(String error) {
+                            Log.d("LOUCHIIIN", "onError");
+                        }
+                    });
+                }
+            }
+        }
+    });
+
+    @Override
+    public void onUpdate() {
+        Log.d("LOUCHIIIN", "onUpdate: ");
+        mLoadingView.setVisibility(View.GONE);
+        initializeRecyclerViewAdapter();
+    }
+
+    @Override
+    public void onLoadingShow() {
+        mLoadingView.setVisibility(View.VISIBLE);
     }
 }

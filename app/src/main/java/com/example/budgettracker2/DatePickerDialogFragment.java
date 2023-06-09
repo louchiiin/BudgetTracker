@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 
 import java.text.SimpleDateFormat;
@@ -35,7 +36,7 @@ public class DatePickerDialogFragment extends DialogFragment {
     public void setOnSelectedDateCallback(OnSelectedDate callback){
         this.mCallback = callback;
     }
-    private Dialog mDialog;
+    private AlertDialog mDialog;
     private DatePicker mDatePicker;
 
     @NonNull
@@ -76,6 +77,13 @@ public class DatePickerDialogFragment extends DialogFragment {
                     }
                 });
         mDialog = builder.create();
+        mDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface arg0) {
+                mDialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(getResources().getColor(R.color.green));
+                mDialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(getResources().getColor(R.color.red));
+            }
+        });
         return mDialog;
     }
 }

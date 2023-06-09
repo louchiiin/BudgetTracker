@@ -10,31 +10,37 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.CategoryList;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
 public class EditAdapter extends RecyclerView.Adapter<EditAdapter.ViewHolder>{
 
-    private final ArrayList<?> dataList;
+    private final ArrayList<?> mDataList;
     private final Activity mActivity;
     private int mEditedPosition = RecyclerView.NO_POSITION;
+    public interface OnUpdateListener {
+        void onLoadingShow();
+        void onUpdate();
+    }
+    private OnUpdateListener mOnUpdateListener;
 
-    public EditAdapter(Activity activity, ArrayList<?> list) {
+    public EditAdapter(Activity activity, ArrayList<?> list, OnUpdateListener listener) {
         this.mActivity = activity;
-        this.dataList = list;
+        this.mDataList = list;
+        this.mOnUpdateListener = listener;
     }
 
     @NonNull
@@ -47,16 +53,19 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.ViewHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Object item = dataList.get(position);
+        Object item = mDataList.get(position);
+        boolean isAccountsList = false;
 
         if (item instanceof AccountsList) {
             AccountsList accountsList = (AccountsList) item;
             holder.mItemName.setText(accountsList.getAccountName());
-            holder.mEditButton.setTag(accountsList.getId());
+            holder.mEditBtn.setTag(accountsList.getId());
+            isAccountsList = true;
         } else if (item instanceof CategoryList) {
             CategoryList categoryList = (CategoryList) item;
             holder.mItemName.setText(categoryList.getCategoryName());
-            holder.mEditButton.setTag(categoryList.getId());
+            holder.mEditBtn.setTag(categoryList.getId());
+            isAccountsList = false;
         }
 
         if (position == mEditedPosition) {
@@ -65,7 +74,7 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.ViewHolder>{
             isUpdating(false, holder);
         }
 
-        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
+        holder.mEditBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 int previousEditedPosition = mEditedPosition;
@@ -81,8 +90,7 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.ViewHolder>{
 
                 holder.mItemName.requestFocus();
                 // Open the keyboard
-                InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(holder.mItemName, InputMethodManager.SHOW_IMPLICIT);
+                closeKeyboard(false, null, holder);
             }
         });
 
@@ -94,15 +102,16 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.ViewHolder>{
                 }
             }
         });
-        holder.mSaveButton.setOnClickListener(new View.OnClickListener() {
+
+        boolean finalIsAccountsList = isAccountsList;
+        holder.mSaveBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                closeKeyboard(true, view, null);
 
                 holder.mItemName.clearFocus();
-                String itemId = (String) holder.mEditButton.getTag();
-                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference("Category").child(itemId);
+                String itemId = (String) holder.mEditBtn.getTag();
+                DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(finalIsAccountsList ? "AccountsCategory" : "Category").child(itemId);
                 mDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -126,47 +135,89 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.ViewHolder>{
                 }
             }
         });
-        holder.mCancelButton.setOnClickListener(new View.OnClickListener() {
+        holder.mCancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.d(MY_TAG, "cancel position: " + holder.getAdapterPosition());
                 isUpdating(false, holder);
             }
         });
+        boolean finalIsAccountsList1 = isAccountsList;
+        holder.mDeleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("Delete button", "onClick: ");
+                if (mOnUpdateListener != null) {
+                    mOnUpdateListener.onLoadingShow();
+                }
+
+                String itemId = (String) holder.mEditBtn.getTag();
+                DatabaseReference databaseRef = FirebaseDatabase.getInstance().getReference(finalIsAccountsList1 ? "AccountsCategory" : "Category").child(itemId);
+
+                // Delete the value
+                databaseRef.removeValue().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d("LOUCHIIIN", "onComplete: ");
+                            if (mOnUpdateListener != null) {
+                                mOnUpdateListener.onUpdate();
+                            }
+                        } else {
+                            Log.d("LOUCHIIIN", "unsuccessful: ");
+                        }
+                        InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                });
+
+            }
+        });
+    }
+
+    private void closeKeyboard(boolean isClose, View view, ViewHolder holder) {
+        InputMethodManager imm = (InputMethodManager) mActivity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        if(isClose) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        } else {
+            imm.showSoftInput(holder.mItemName, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     private void isUpdating(boolean status, ViewHolder holder) {
         if(status) {
-            holder.mEditButton.setVisibility(View.GONE);
-            holder.mCancelButton.setVisibility(View.VISIBLE);
-            holder.mSaveButton.setVisibility(View.VISIBLE);
+            holder.mEditBtn.setVisibility(View.GONE);
+            holder.mCancelBtn.setVisibility(View.VISIBLE);
+            holder.mSaveBtn.setVisibility(View.VISIBLE);
+            holder.mDeleteBtn.setVisibility(View.VISIBLE);
             holder.mItemName.setEnabled(true);
         } else {
-            holder.mEditButton.setVisibility(View.VISIBLE);
-            holder.mCancelButton.setVisibility(View.GONE);
-            holder.mSaveButton.setVisibility(View.GONE);
+            holder.mEditBtn.setVisibility(View.VISIBLE);
+            holder.mCancelBtn.setVisibility(View.GONE);
+            holder.mSaveBtn.setVisibility(View.GONE);
+            holder.mDeleteBtn.setVisibility(View.GONE);
             holder.mItemName.setEnabled(false);
         }
     }
 
     @Override
     public int getItemCount() {
-        return (dataList == null) ? 0 : dataList.size();
+        return (mDataList == null) ? 0 : mDataList.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         private final EditText mItemName;
-        private final View mEditButton;
-        private final View mSaveButton;
-        private final View mCancelButton;
-        private final TextView mEditView;
+        private final View mEditBtn;
+        private final View mSaveBtn;
+        private final View mCancelBtn;
+        private final View mDeleteBtn;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             mItemName = itemView.findViewById(R.id.item_name);
-            mEditButton = itemView.findViewById(R.id.edit_button);
-            mSaveButton = itemView.findViewById(R.id.save_button);
-            mCancelButton = itemView.findViewById(R.id.cancel_button);
-            mEditView = itemView.findViewById(R.id.edit_icon);
+            mEditBtn = itemView.findViewById(R.id.edit_button);
+            mSaveBtn = itemView.findViewById(R.id.save_button);
+            mCancelBtn = itemView.findViewById(R.id.cancel_button);
+            mDeleteBtn = itemView.findViewById(R.id.delete_button);
         }
     }
 }

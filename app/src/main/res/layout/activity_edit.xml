@@ -6,11 +6,32 @@
     android:layout_height="match_parent"
     tools:context=".EditActivity">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/full_loading_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/translucent_black"
+        android:clickable="true"
+        android:focusable="true"
+        android:elevation="20dp"
+        android:visibility="gone">
 
+        <com.github.ybq.android.spinkit.SpinKitView
+            android:id="@+id/spinkit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:SpinKit_Color="@color/white"
+            style="@style/SpinKitView.CubeGrid" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/blue"
+        android:background="@color/gray"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

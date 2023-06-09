@@ -15,6 +15,7 @@
     <color name="transparent">#00000000</color>
     <color name="dark_gray">#5A5A5A</color>
     <color name="translucent_black">#8C000000</color>
+    <color name="green">#008000</color>
 
     <!--
     100% — FF

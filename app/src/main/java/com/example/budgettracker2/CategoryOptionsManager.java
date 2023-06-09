@@ -1,9 +1,5 @@
 package com.example.budgettracker2;
 
-import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-
 import androidx.annotation.NonNull;
 
 import com.example.budgettracker2.Model.AccountsList;
@@ -23,11 +19,11 @@ import java.util.Set;
 public class CategoryOptionsManager {
     private static CategoryOptionsManager manager = new CategoryOptionsManager();
 
-    ArrayList<CategoryList> mCategoryList;
-    ArrayList<AccountsList> mListAccounts;
+    ArrayList<CategoryList> mCategoriesList;
+    ArrayList<AccountsList> mAccountsList;
     private CategoryOptionsManager() {
-        mCategoryList = null;
-        mListAccounts = null;
+        mCategoriesList = null;
+        mAccountsList = null;
     }
 
     public static CategoryOptionsManager getInstance(){
@@ -38,19 +34,19 @@ public class CategoryOptionsManager {
 
 
     public ArrayList<CategoryList> getCategoryList() {
-        return mCategoryList;
+        return mCategoriesList;
     }
 
     public void setCategoryList(ArrayList<CategoryList> categoryLists) {
-        this.mCategoryList = categoryLists;
+        this.mCategoriesList = categoryLists;
     }
 
     public ArrayList<AccountsList> getListAccounts() {
-        return mListAccounts;
+        return mAccountsList;
     }
 
     public void setListAccounts(ArrayList<AccountsList> listAccounts) {
-        this.mListAccounts = listAccounts;
+        this.mAccountsList = listAccounts;
     }
 
     public void requestFetchAccount(ManagerCallback callback) {
@@ -58,7 +54,7 @@ public class CategoryOptionsManager {
         rootRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                mListAccounts = new ArrayList<>();
+                mAccountsList = new ArrayList<>();
                 Gson gson = new Gson();
                 Set<String> accountNamesSet = new HashSet<>();
 
@@ -78,7 +74,7 @@ public class CategoryOptionsManager {
                         // Check if the account name already exists in the set
                         if (!accountNamesSet.contains(accountName)) {
                             // Account name is not in the set, add the account to the list
-                            mListAccounts.add(accountsList);
+                            mAccountsList.add(accountsList);
                             accountNamesSet.add(accountName);
                         }
                     }
@@ -102,7 +98,7 @@ public class CategoryOptionsManager {
         rootRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                mCategoryList = new ArrayList<>();
+                mCategoriesList = new ArrayList<>();
                 Gson gson = new Gson();
                 Set<String> accountNamesSet = new HashSet<>();
 
@@ -122,7 +118,7 @@ public class CategoryOptionsManager {
                         // Check if the account name already exists in the set
                         if (!accountNamesSet.contains(categoryName)) {
                             // Account name is not in the set, add the account to the list
-                            mCategoryList.add(categoryList);
+                            mCategoriesList.add(categoryList);
                             accountNamesSet.add(categoryName);
                         }
                     }
