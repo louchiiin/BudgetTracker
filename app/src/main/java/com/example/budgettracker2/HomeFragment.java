@@ -22,8 +22,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeFragment extends Fragment implements HomeActivity.TextUpdateListener{
     private FirebaseAuth mAuth;
@@ -96,7 +105,20 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
                 return true;
             }
         });
+        displayStatFragment();
         return mConvertView;
+    }
+
+
+    private void displayStatFragment() {
+        if(getActivity() != null) {
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            StatsFragment statsFragment = new StatsFragment();
+            fragmentTransaction.add(R.id.home_content, statsFragment, "status_fragment");
+            //fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
     }
 
     private void checkFirebaseAuth() {

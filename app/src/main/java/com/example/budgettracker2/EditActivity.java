@@ -112,36 +112,40 @@ public class EditActivity extends AppCompatActivity implements EditAdapter.OnUpd
             // Process the data from EditActivity
             if (data != null) {
                 String categoryType = data.getStringExtra("category_type");
-                if(categoryType.equals(Constants.CATEGORY_TYPE)) {
-                    mCategoryOptionsManager.requestFetchCategory(new ManagerCallback() {
-                        @Override
-                        public void onFinish() {
-                            Log.d("LOUCHIIIN", "onFinish: Category " + new Gson().toJson(mCategoryOptionsManager.mCategoriesList));
-                            initializeRecyclerViewAdapter();
-                        }
-
-                        @Override
-                        public void onError(String error) {
-                            Log.d("LOUCHIIIN", "onError");
-                        }
-                    });
-                } else {
-                    mCategoryOptionsManager.requestFetchAccount(new ManagerCallback() {
-                        @Override
-                        public void onFinish() {
-                            Log.d("LOUCHIIIN", "onFinish: Accounts " + new Gson().toJson(mCategoryOptionsManager.mAccountsList));
-                            initializeRecyclerViewAdapter();
-                        }
-
-                        @Override
-                        public void onError(String error) {
-                            Log.d("LOUCHIIIN", "onError");
-                        }
-                    });
-                }
+                fetchTypeResult(categoryType);
             }
         }
     });
+
+    private void fetchTypeResult(String categoryType) {
+        if(categoryType.equals(Constants.CATEGORY_TYPE)) {
+            mCategoryOptionsManager.requestFetchCategory(new ManagerCallback() {
+                @Override
+                public void onFinish() {
+                    Log.d("LOUCHIIIN", "onFinish: Category " + new Gson().toJson(mCategoryOptionsManager.mCategoriesList));
+                    initializeRecyclerViewAdapter();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.d("LOUCHIIIN", "onError");
+                }
+            });
+        } else {
+            mCategoryOptionsManager.requestFetchAccount(new ManagerCallback() {
+                @Override
+                public void onFinish() {
+                    Log.d("LOUCHIIIN", "onFinish: Accounts " + new Gson().toJson(mCategoryOptionsManager.mAccountsList));
+                    initializeRecyclerViewAdapter();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Log.d("LOUCHIIIN", "onError");
+                }
+            });
+        }
+    }
 
     @Override
     public void onUpdate() {
