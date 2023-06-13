@@ -15,6 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.budgettracker2.Adapter.TransactionAdapter;
+import com.example.budgettracker2.CategoryOptionsManager;
+import com.example.budgettracker2.ManagerCallback;
+import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
@@ -41,6 +45,8 @@ public class StatsFragment extends Fragment {
     private int mMonth;
     private ConstraintLayout mLoadingView;
     private RecyclerView mRecyclerView;
+    private TransactionAdapter mAdapter;
+    private ArrayList<TransactionList> mTransactionList;
     public StatsFragment() {
     }
 
@@ -57,7 +63,6 @@ public class StatsFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.transaction_list_view);
 
         mCalendar = Calendar.getInstance();
-        initializeRecyclerView();
         initializeGraph(view);
         updateMonthAndYear();
         fetchList();
@@ -67,15 +72,27 @@ public class StatsFragment extends Fragment {
         return view;
     }
 
+    private void initializeRecyclerView() {
+        mAdapter = new TransactionAdapter(getActivity(), mTransactionList);
+        mRecyclerView.setAdapter(mAdapter);
+    }
+
     private void fetchList() {
         mLoadingView.setVisibility(View.VISIBLE);
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        CategoryOptionsManager.getInstance().requestFetchTransaction(new ManagerCallback() {
             @Override
-            public void run() {
+            public void onFinish() {
+                mLoadingView.setVisibility(View.GONE);
+                mTransactionList = new ArrayList<TransactionList>();
+                mTransactionList = CategoryOptionsManager.getInstance().getTransactionList();
+                initializeRecyclerView();
+            }
+
+            @Override
+            public void onError(String error) {
                 mLoadingView.setVisibility(View.GONE);
             }
-        }, 2000);
+        });
     }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
