@@ -1,6 +1,6 @@
-package com.example.budgettracker2;
+package com.example.budgettracker2.Activity;
 
-import static com.example.budgettracker2.MainActivity.MY_TAG;
+import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,6 +13,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.budgettracker2.CacheManager;
+import com.example.budgettracker2.Fragment.HomeFragment;
+import com.example.budgettracker2.R;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class HomeActivity extends AppCompatActivity {

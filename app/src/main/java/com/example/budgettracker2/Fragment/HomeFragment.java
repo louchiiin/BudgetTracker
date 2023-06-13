@@ -1,8 +1,7 @@
-package com.example.budgettracker2;
+package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.MainActivity.MY_TAG;
+import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,18 +22,16 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.example.budgettracker2.CacheManager;
+import com.example.budgettracker2.CategoryOptionsManager;
+import com.example.budgettracker2.Activity.HomeActivity;
+import com.example.budgettracker2.Activity.MainActivity;
+import com.example.budgettracker2.ManagerCallback;
+import com.example.budgettracker2.R;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class HomeFragment extends Fragment implements HomeActivity.TextUpdateListener{
+public class HomeFragment extends Fragment implements HomeActivity.TextUpdateListener {
     private FirebaseAuth mAuth;
     private DrawerLayout mSideMenu;
     private NavigationView mNavigationView;
@@ -106,7 +103,22 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
             }
         });
         displayStatFragment();
+        fetchTransaction();
         return mConvertView;
+    }
+
+    private void fetchTransaction() {
+        CategoryOptionsManager.getInstance().requestFetchTransaction(new ManagerCallback() {
+            @Override
+            public void onFinish() {
+                Log.d(MY_TAG, "onFinish: ");
+            }
+
+            @Override
+            public void onError(String error) {
+
+            }
+        });
     }
 
 

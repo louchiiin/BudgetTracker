@@ -1,8 +1,7 @@
-package com.example.budgettracker2;
+package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.MainActivity.MY_TAG;
+import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
 
-import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,14 +11,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.DatePicker;
+
+import com.example.budgettracker2.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

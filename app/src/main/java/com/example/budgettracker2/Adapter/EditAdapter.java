@@ -1,6 +1,6 @@
-package com.example.budgettracker2;
+package com.example.budgettracker2.Adapter;
 
-import static com.example.budgettracker2.MainActivity.MY_TAG;
+import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,8 +14,10 @@ import android.widget.EditText;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.budgettracker2.CategoryOptionsManager;
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.CategoryList;
+import com.example.budgettracker2.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;

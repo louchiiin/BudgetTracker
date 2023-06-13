@@ -1,11 +1,12 @@
-package com.example.budgettracker2;
+package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.MainActivity.MY_TAG;
+import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
 
 import android.os.Bundle;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.budgettracker2.R;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
@@ -38,7 +40,7 @@ public class StatsFragment extends Fragment {
     private int mYear;
     private int mMonth;
     private ConstraintLayout mLoadingView;
-
+    private RecyclerView mRecyclerView;
     public StatsFragment() {
     }
 
@@ -52,9 +54,10 @@ public class StatsFragment extends Fragment {
         mPreviousMonth = view.findViewById(R.id.stats_previous_month);
         mNextMonth = view.findViewById(R.id.stats_next_month);
         mLoadingView = view.findViewById(R.id.loading_view);
+        mRecyclerView = view.findViewById(R.id.transaction_list_view);
 
         mCalendar = Calendar.getInstance();
-
+        initializeRecyclerView();
         initializeGraph(view);
         updateMonthAndYear();
         fetchList();
@@ -148,4 +151,6 @@ public class StatsFragment extends Fragment {
         super.onResume();
         fetchList();
     }
+
+    //create a recyclerview adapter class
 }

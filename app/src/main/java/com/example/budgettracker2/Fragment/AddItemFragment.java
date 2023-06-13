@@ -1,6 +1,6 @@
-package com.example.budgettracker2;
+package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.MainActivity.MY_TAG;
+import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -26,9 +26,16 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.budgettracker2.CategoryOptionsManager;
+import com.example.budgettracker2.Constants;
+import com.example.budgettracker2.CustomMaxWidthFrameLayout;
+import com.example.budgettracker2.Activity.EditActivity;
+import com.example.budgettracker2.EnumDeclarations;
+import com.example.budgettracker2.ManagerCallback;
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.CategoryList;
-import com.example.budgettracker2.Model.Transactions;
+import com.example.budgettracker2.Model.TransactionList;
+import com.example.budgettracker2.R;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -68,7 +75,7 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     private int mOriginalDrawable;
     private int mClickedDrawable;
     private int mSelectedTransaction;
-    private Transactions mTransactions;
+    private TransactionList mTransactions;
     private ActivityResultLauncher<Intent> mLauncher;
     private SpinKitView mAccountLoadingView;
     private SpinKitView mCategoryLoadingView;
@@ -145,7 +152,7 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
         mAmountView.setOnFocusChangeListener(mOnFocusChangeListener);
         mNoteView.setOnFocusChangeListener(mOnFocusChangeListener);
 
-        mTransactions = new Transactions();
+        mTransactions = new TransactionList();
         Log.d(MY_TAG, "onCreateView: ");
         mLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {

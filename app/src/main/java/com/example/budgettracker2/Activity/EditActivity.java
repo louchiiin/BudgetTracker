@@ -1,4 +1,4 @@
-package com.example.budgettracker2;
+package com.example.budgettracker2.Activity;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -16,8 +16,13 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.budgettracker2.Adapter.EditAdapter;
+import com.example.budgettracker2.CategoryOptionsManager;
+import com.example.budgettracker2.Constants;
+import com.example.budgettracker2.ManagerCallback;
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.CategoryList;
+import com.example.budgettracker2.R;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
