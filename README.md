@@ -1,8 +1,12 @@
 # BudgetTracker
-<h2> Budget Tracker Android </h2>
+<h1> Budget Tracker Android </h1>
 
-Database:
-Firebase RealtimeDatabse
+<h3> Database: </h3>
+<ul>
+  <li>Firebase Realtime Databse</li>
+</ul>
 
-Charts
-https://github.com/PhilJay/MPAndroidChart
+<h3> Charts: </h3>
+<ul>
+  <li>https://github.com/PhilJay/MPAndroidChart</li>
+</ul>
