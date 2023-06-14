@@ -6,7 +6,8 @@
   <li>Firebase Realtime Databse</li>
 </ul>
 
-<h3> Charts: </h3>
+<h3> Used Public Libraries: </h3>
 <ul>
   <li>https://github.com/PhilJay/MPAndroidChart</li>
+  <li>https://github.com/koral--/android-gif-drawable</li>
 </ul>
