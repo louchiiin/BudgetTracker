@@ -68,9 +68,9 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     private EditText mAmountView;
     private EditText mNoteView;
     private TextView mDescriptionView;
-    private Button mIncomeBtn;
-    private Button mExpenseBtn;
-    private Button mTransferBtn;
+    private View mIncomeBtn;
+    private View mExpenseBtn;
+    private View mTransferBtn;
     private CategoryOptionsManager mCategoryOptionsManager;
     private int mOriginalDrawable;
     private int mClickedDrawable;
@@ -134,6 +134,7 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
         mSelectCategory.setFocusable(false);
         mSelectCategory.setClickable(false);
 
+        mSelectedTransaction = EnumDeclarations.EXPENSE.getValue();
         mOriginalDrawable = R.drawable.custom_button_black_stroke_white_fill;
         mClickedDrawable = R.drawable.custom_button_black_stroke_red_fill;
 
@@ -192,9 +193,6 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     mIncomeBtn.setBackgroundResource(mClickedDrawable);
                     mExpenseBtn.setBackgroundResource(mOriginalDrawable);
                     mTransferBtn.setBackgroundResource(mOriginalDrawable);
-                    mIncomeBtn.setTextColor(getResources().getColor(R.color.white));
-                    mExpenseBtn.setTextColor(getResources().getColor(R.color.black));
-                    mTransferBtn.setTextColor(getResources().getColor(R.color.black));
                     mSelectedTransaction = EnumDeclarations.INCOME.getValue();
                     updateAccountAndCategoryText(false);
                     clearFields(false);
@@ -205,9 +203,6 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     mIncomeBtn.setBackgroundResource(mOriginalDrawable);
                     mExpenseBtn.setBackgroundResource(mClickedDrawable);
                     mTransferBtn.setBackgroundResource(mOriginalDrawable);
-                    mIncomeBtn.setTextColor(getResources().getColor(R.color.black));
-                    mExpenseBtn.setTextColor(getResources().getColor(R.color.white));
-                    mTransferBtn.setTextColor(getResources().getColor(R.color.black));
                     mSelectedTransaction = EnumDeclarations.EXPENSE.getValue();
                     updateAccountAndCategoryText(false);
                     clearFields(false);
@@ -218,9 +213,6 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     mIncomeBtn.setBackgroundResource(mOriginalDrawable);
                     mExpenseBtn.setBackgroundResource(mOriginalDrawable);
                     mTransferBtn.setBackgroundResource(mClickedDrawable);
-                    mIncomeBtn.setTextColor(getResources().getColor(R.color.black));
-                    mExpenseBtn.setTextColor(getResources().getColor(R.color.black));
-                    mTransferBtn.setTextColor(getResources().getColor(R.color.white));
                     mSelectedTransaction = EnumDeclarations.TRANSFER.getValue();
                     updateAccountAndCategoryText(true);
                     clearFields(false);
@@ -411,13 +403,11 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
         mAmountView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_bottom, null));
 
         if(isClearAll) {
-            mSelectedTransaction = 0;
+            mSelectedTransaction = EnumDeclarations.EXPENSE.getValue(); //default value is expense
             mIncomeBtn.setBackgroundResource(mOriginalDrawable);
-            mExpenseBtn.setBackgroundResource(mOriginalDrawable);
+            mExpenseBtn.setBackgroundResource(mClickedDrawable);
             mTransferBtn.setBackgroundResource(mOriginalDrawable);
-            mIncomeBtn.setTextColor(getResources().getColor(R.color.black));
-            mExpenseBtn.setTextColor(getResources().getColor(R.color.black));
-            mTransferBtn.setTextColor(getResources().getColor(R.color.black));
+
             mDatePickerTextView.setText("");
             mSelectAccount.setText("");
             mSelectCategory.setText("");

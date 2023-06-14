@@ -8,10 +8,45 @@
     tools:context=".Fragment.StatsFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/no_data_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+    
+        <pl.droidsonroids.gif.GifImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/no_result"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="No Data available"
+            android:textAllCaps="true"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView"
+            app:layout_constraintVertical_bias="0.0" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/month_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -63,10 +98,18 @@
                 android:layout_gravity="center"
                 android:background="@drawable/ic_arrow_forward" />
         </FrameLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/border_bottom_lighter"
+            app:layout_constraintBottom_toBottomOf="@+id/stats_month_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
-        android:id="@+id/linearLayout2"
+        android:id="@+id/graph_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -74,21 +117,77 @@
         app:layout_constraintTop_toBottomOf="@+id/month_layout">
 
         <LinearLayout
-            android:id="@+id/chart_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:orientation="horizontal">
+
+            <FrameLayout
+                android:id="@+id/income_selection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:gravity="center"
+                android:background="@drawable/custom_button_black_stroke_white_fill">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_income" />
+
+            </FrameLayout>
+
+            <View
+                android:layout_width="5dp"
+                android:layout_height="match_parent" />
+
+            <FrameLayout
+                android:id="@+id/expenses_selection"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:padding="10dp"
+                android:gravity="center"
+                android:background="@drawable/custom_button_black_stroke_red_fill">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_expense"
+                    android:layout_gravity="center"/>
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/border_bottom_lighter"/>
+
+        <LinearLayout
+            android:id="@+id/chart_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@color/blue"
             android:gravity="center"
             android:orientation="vertical">
 
             <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/pieChart"
-                android:layout_width="300dp"
-                android:layout_height="300dp" />
+                android:id="@+id/pie_chart"
+                android:layout_width="250dp"
+                android:layout_height="250dp" />
         </LinearLayout>
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@drawable/border_bottom_lighter"/>
+
         <LinearLayout
+            android:id="@+id/transaction_list_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"

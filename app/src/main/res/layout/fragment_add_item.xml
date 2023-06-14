@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:layout_gravity="center_vertical"
+        android:gravity="center"
         android:layout_marginHorizontal="10dp"
         android:layout_marginTop="10dp"
         android:orientation="horizontal"
@@ -20,39 +21,47 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <Button
+        <FrameLayout
             android:id="@+id/income_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:background="@drawable/custom_button_black_stroke_white_fill"
-            android:maxLines="1"
-            android:text="Income"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            app:backgroundTint="@null" />
+            android:paddingVertical="5dp"
+            android:background="@drawable/custom_button_black_stroke_white_fill">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_income" />
+
+        </FrameLayout>
 
         <View
             android:layout_width="5dp"
             android:layout_height="wrap_content" />
 
-        <Button
+        <FrameLayout
             android:id="@+id/expense_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.5"
-            android:background="@drawable/custom_button_black_stroke_white_fill"
-            android:maxLines="1"
-            android:text="Expenses"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            app:backgroundTint="@null" />
+            android:paddingVertical="5dp"
+            android:background="@drawable/custom_button_black_stroke_white_fill">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_expense" />
+
+        </FrameLayout>
 
         <View
             android:layout_width="5dp"
             android:layout_height="wrap_content" />
 
-        <Button
+        <!--<Button
             android:id="@+id/transfer_button"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -62,7 +71,22 @@
             android:text="Transfer"
             android:textColor="@color/black"
             android:textSize="12sp"
-            app:backgroundTint="@null" />
+            app:backgroundTint="@null" />-->
+        <FrameLayout
+            android:id="@+id/transfer_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:paddingVertical="5dp"
+            android:background="@drawable/custom_button_black_stroke_white_fill">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_transfer" />
+
+        </FrameLayout>
     </LinearLayout>
 
     <androidx.cardview.widget.CardView

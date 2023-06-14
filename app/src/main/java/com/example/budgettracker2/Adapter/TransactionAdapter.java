@@ -14,8 +14,6 @@ import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.ViewHolder> {
@@ -58,9 +56,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         holder.mAmountView.setText(amountWithCurrency);
         int amount = Integer.parseInt(transactionList.getTransactionAmount());
         double percentage = ((double) amount / mTotal) * 100;
-        DecimalFormat decimalFormat = new DecimalFormat("#.##");
-        decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
-        String percentageText = decimalFormat.format(percentage) + "%";
+        long roundedPercentage = Math.round(percentage);
+        String percentageText = roundedPercentage + "%";
 
         holder.mPercentage.setText(percentageText);
     }

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.budgettracker2.Adapter.TransactionAdapter;
@@ -27,7 +28,6 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.MPPointF;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +37,8 @@ import java.util.Locale;
 
 
 public class StatsFragment extends Fragment {
+    private static final String EXPENSES = "Expenses";
+    private static final String INCOME = "INCOME";
     private TextView mMonthTitle;
     private View mPreviousMonth;
     private View mNextMonth;
@@ -52,8 +54,15 @@ public class StatsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private TransactionAdapter mAdapter;
     private ArrayList<TransactionList> mTransactionList;
+    private View mExpensesSelection;
+    private View mIncomeSelection;
+    private ConstraintLayout mNoDataView;
     private int mTotal = 0;
-    private String mTransactionType = "Expenses"; //add later Income and Transfer
+    private int mOriginalDrawable;
+    private int mClickedDrawable;
+    private String mTransactionType;
+    private LinearLayout mPieChartContainer;
+    private LinearLayout mListContainer;
     public StatsFragment() {
     }
 
@@ -68,15 +77,28 @@ public class StatsFragment extends Fragment {
         mNextMonth = view.findViewById(R.id.stats_next_month);
         mLoadingView = view.findViewById(R.id.loading_view);
         mRecyclerView = view.findViewById(R.id.transaction_list_view);
+        mExpensesSelection = view.findViewById(R.id.expenses_selection);
+        mIncomeSelection = view.findViewById(R.id.income_selection);
+        mNoDataView = view.findViewById(R.id.no_data_view);
+        mPieChartContainer = view.findViewById(R.id.chart_container);
+        mListContainer = view.findViewById(R.id.transaction_list_container);
+
+        mOriginalDrawable = R.drawable.custom_button_black_stroke_white_fill;
+        mClickedDrawable = R.drawable.custom_button_black_stroke_red_fill;
 
         mCalendar = Calendar.getInstance();
-        mPieChart = view.findViewById(R.id.pieChart);
+        mPieChart = view.findViewById(R.id.pie_chart);
         mPieChart.setNoDataText("Initializing...");
         mPieChart.setNoDataTextColor(getResources().getColor(R.color.black));
+
+        mTransactionType = EXPENSES; //on load load expenses
+        checkSelectedButton();
         fetchList();
         updateMonthAndYear();
         mNextMonth.setOnClickListener(mOnClickListener);
         mPreviousMonth.setOnClickListener(mOnClickListener);
+        mIncomeSelection.setOnClickListener(mOnClickListener);
+        mExpensesSelection.setOnClickListener(mOnClickListener);
 
         return view;
     }
@@ -94,8 +116,44 @@ public class StatsFragment extends Fragment {
                 mLoadingView.setVisibility(View.GONE);
                 mTransactionList = new ArrayList<TransactionList>();
                 mTransactionList = CategoryOptionsManager.getInstance().getTransactionList();
-                initializeRecyclerView();
+                // Create a new list to store the combined transactions
+                ArrayList<TransactionList> combinedTransactions = new ArrayList<>();
+
+                // Iterate over the transactions
+                for (TransactionList transaction : mTransactionList) {
+                    boolean found = false;
+
+                    // Iterate over the combined transactions to check if a transaction with the same name exists
+                    for (TransactionList combinedTransaction : combinedTransactions) {
+                        if (transaction.getTransactionCategoryType().equals(combinedTransaction.getTransactionCategoryType())) {
+                            // If a transaction with the same name is found, combine them
+                            String result = String.valueOf(Integer.parseInt(combinedTransaction.getTransactionAmount()) + Integer.parseInt(transaction.getTransactionAmount()));
+                            combinedTransaction.setTransactionAmount(result);
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    // If no transaction with the same name was found, add the transaction to the combined list
+                    if (!found) {
+                        combinedTransactions.add(transaction);
+                    }
+                }
+                // Update mTransactionList with the combined transactions
+                mTransactionList = combinedTransactions;
+
+                if(mTransactionList.size() == 0) {
+                    mNoDataView.setVisibility(View.VISIBLE);
+                    mPieChartContainer.setVisibility(View.GONE);
+                    mListContainer.setVisibility(View.GONE);
+                } else {
+                    mNoDataView.setVisibility(View.GONE);
+                    mPieChartContainer.setVisibility(View.VISIBLE);
+                    mListContainer.setVisibility(View.VISIBLE);
+                }
+                Log.d("LOUCHIIIN", "mTOOOTAL " + mTotal);
                 calculateTotal();
+                initializeRecyclerView();
                 initializeGraph();
             }
 
@@ -107,10 +165,12 @@ public class StatsFragment extends Fragment {
     }
 
     private void calculateTotal() {
+        mTotal = 0;
         for (TransactionList transaction : mTransactionList) {
             int amount = Integer.parseInt(transaction.getTransactionAmount());
             mTotal += amount;
         }
+        Log.d("LOUCHIIIN", "mTotal " + mTotal);
     }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -121,19 +181,33 @@ public class StatsFragment extends Fragment {
                     Log.d(MY_TAG, "onClick: previous month");
                     mCalendar.add(Calendar.MONTH, -1);
                     updateMonthAndYear();
-                    mTotal = 0;
                     fetchList();
                     break;
                 case R.id.stats_next_month:
                     Log.d(MY_TAG, "onClick: next month");
                     mCalendar.add(Calendar.MONTH, 1);
                     updateMonthAndYear();
-                    mTotal = 0;
                     fetchList();
                     break;
+                case R.id.expenses_selection:
+                    mTransactionType = EXPENSES;
+                    checkSelectedButton();
+                    fetchList();
+                    break;
+                case R.id.income_selection:
+                    mTransactionType = INCOME;
+                    checkSelectedButton();
+                    fetchList();
+                    break;
+
             }
         }
     };
+
+    private void checkSelectedButton() {
+        mIncomeSelection.setBackgroundResource(mTransactionType.equals(INCOME) ? mClickedDrawable : mOriginalDrawable);
+        mExpensesSelection.setBackgroundResource(mTransactionType.equals(EXPENSES) ? mClickedDrawable : mOriginalDrawable);
+    }
 
     private void updateMonthAndYear() {
         SimpleDateFormat formatter = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
@@ -159,11 +233,8 @@ public class StatsFragment extends Fragment {
         List<PieEntry> entries = new ArrayList<>();
         for (TransactionList transaction : mTransactionList) {
             int percentage = Integer.parseInt(transaction.getTransactionAmount());
-            Log.d(MY_TAG, "percentage: " + percentage);
-            Log.d(MY_TAG, "mTotal: " + mTotal);
             double percentageFloat = ((double) percentage / mTotal) * 100;
             String label = transaction.getTransactionCategoryType();
-            Log.d(MY_TAG, "initializeGraph: " + percentageFloat);
             entries.add(new PieEntry((float) percentageFloat, label));
         }
 
