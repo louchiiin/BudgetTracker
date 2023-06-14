@@ -5,18 +5,23 @@ import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.CategoryList;
 import com.example.budgettracker2.Model.TransactionList;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -27,10 +32,13 @@ public class CategoryOptionsManager {
     public ArrayList<CategoryList> mCategoriesList;
     public ArrayList<AccountsList> mAccountsList;
     public ArrayList<TransactionList> mTransactionList;
+    public String mCurrency;
+
     private CategoryOptionsManager() {
         mCategoriesList = null;
         mAccountsList = null;
         mTransactionList = null;
+        mCurrency = "";
     }
 
     public static CategoryOptionsManager getInstance(){
@@ -62,6 +70,18 @@ public class CategoryOptionsManager {
 
     public void setTransactionList(ArrayList<TransactionList> mTransactionList) {
         this.mTransactionList = mTransactionList;
+    }
+
+    public String getCurrency() {
+        return mCurrency;
+    }
+
+    public void setCurrency(String place) {
+        if(place.equals("PH")){
+            this.mCurrency = "₱";
+        }else{
+            this.mCurrency = "$";
+        }
     }
 
     public void requestFetchAccount(ManagerCallback callback) {
@@ -154,31 +174,40 @@ public class CategoryOptionsManager {
         });
     }
 
-    public void requestFetchTransaction(ManagerCallback callback) {
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference().child("Transaction");
-        rootRef.addValueEventListener(new ValueEventListener() {
+    public void requestFetchTransaction(String type, String startDate, String endDate, ManagerCallback callback) {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Transaction/" + type);
+
+        Query query = databaseReference.orderByChild("transaction_date").startAt(startDate).endAt(endDate);
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 mTransactionList = new ArrayList<>();
 
-                for (DataSnapshot dataSnapshot : snapshot.getChildren()) {
-                    for (DataSnapshot childSnapshot : dataSnapshot.getChildren()) {
-                        String childKey = childSnapshot.getKey();
-                        Log.d(MY_TAG, "childKey " + childKey);
+                for (DataSnapshot transactionSnapshot : dataSnapshot.getChildren()) {
+                    String childKey = transactionSnapshot.getKey();
 
-                        // Create a new Transaction object and set its values
-                        TransactionList transaction = new TransactionList();
-                        transaction.setTransactionId(childKey);
-                        transaction.setTransactionDate(childSnapshot.child("transaction_date").getValue(String.class));
-                        transaction.setTransactionAmount(childSnapshot.child("transaction_amount").getValue(String.class));
-                        transaction.setTransactionAccountType(childSnapshot.child("transaction_account_type").getValue(String.class));
-                        transaction.setTransactionCategoryType(childSnapshot.child("transaction_category_type").getValue(String.class));
-                        transaction.setTransactionDescription(childSnapshot.child("transaction_description").getValue(String.class));
-                        transaction.setTransactionNote(childSnapshot.child("transaction_note").getValue(String.class));
+                    // Create a new Transaction object and set its values
+                    TransactionList transaction = new TransactionList();
+                    transaction.setTransactionId(childKey);
+                    transaction.setTransactionDate(transactionSnapshot.child("transaction_date").getValue(String.class));
+                    transaction.setTransactionAmount(transactionSnapshot.child("transaction_amount").getValue(String.class));
+                    transaction.setTransactionAccountType(transactionSnapshot.child("transaction_account_type").getValue(String.class));
+                    transaction.setTransactionCategoryType(transactionSnapshot.child("transaction_category_type").getValue(String.class));
+                    transaction.setTransactionDescription(transactionSnapshot.child("transaction_description").getValue(String.class));
+                    transaction.setTransactionNote(transactionSnapshot.child("transaction_note").getValue(String.class));
 
-                        // Add the transaction to the ArrayList
-                        mTransactionList.add(transaction);
-                    }
+                    // Add the transaction to the ArrayList
+                    mTransactionList.add(transaction);
+                    // Sort the list based on amount
+                    Collections.sort(mTransactionList, new Comparator<TransactionList>() {
+                        @Override
+                        public int compare(TransactionList t1, TransactionList t2) {
+                            //sorting from highest to lowest
+                            return Double.compare(Double.parseDouble(t2.getTransactionAmount()), Double.parseDouble(t1.getTransactionAmount()));
+                        }
+
+                    });
                 }
 
                 Log.d(MY_TAG, "onDataChange: " + new Gson().toJson(mTransactionList));
@@ -189,9 +218,9 @@ public class CategoryOptionsManager {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                if(callback != null) {
-                    callback.onError(error.getMessage());
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                if (callback != null) {
+                    callback.onError(databaseError.getMessage());
                 }
             }
         });

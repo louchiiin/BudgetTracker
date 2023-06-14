@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         //set values of account and category on start of the app
         CategoryOptionsManager.getInstance().requestFetchAccount(null);
         CategoryOptionsManager.getInstance().requestFetchCategory(null);
+        CategoryOptionsManager.getInstance().setCurrency("PH"); //set default currency to Philippine Peso
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 

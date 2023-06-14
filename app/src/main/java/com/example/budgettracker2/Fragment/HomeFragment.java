@@ -23,10 +23,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.budgettracker2.CacheManager;
-import com.example.budgettracker2.CategoryOptionsManager;
 import com.example.budgettracker2.Activity.HomeActivity;
 import com.example.budgettracker2.Activity.MainActivity;
-import com.example.budgettracker2.ManagerCallback;
 import com.example.budgettracker2.R;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -108,7 +106,7 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
     }
 
     private void fetchTransaction() {
-        CategoryOptionsManager.getInstance().requestFetchTransaction(new ManagerCallback() {
+        /*CategoryOptionsManager.getInstance().requestFetchTransaction(new ManagerCallback() {
             @Override
             public void onFinish() {
                 Log.d(MY_TAG, "onFinish: ");
@@ -118,7 +116,7 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
             public void onError(String error) {
 
             }
-        });
+        });*/
     }
 
 

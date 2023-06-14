@@ -9,17 +9,23 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.budgettracker2.CategoryOptionsManager;
+import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.ViewHolder> {
     private Activity mActivity;
     private ArrayList<?> mDataList;
+    int mTotal = 0;
     public TransactionAdapter(Activity activity, ArrayList<?> list) {
         this.mActivity = activity;
         this.mDataList = list;
+        calculateTotal();
     }
 
     @NonNull
@@ -30,11 +36,33 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         return new ViewHolder(view);
     }
 
+    private void calculateTotal() {
+        for (Object obj : mDataList) {
+            if (obj instanceof TransactionList) {
+                TransactionList transaction = (TransactionList) obj;
+                int amount = Integer.parseInt(transaction.getTransactionAmount());
+                mTotal += amount;
+            } else if (obj instanceof AccountsList) {
+                AccountsList account = (AccountsList) obj;
+                // Perform operations specific to AccountList
+                // ...
+            }
+        }
+    }
+
     @Override
     public void onBindViewHolder(@NonNull TransactionAdapter.ViewHolder holder, int position) {
         TransactionList transactionList = (TransactionList) mDataList.get(position);
+        String amountWithCurrency = CategoryOptionsManager.getInstance().getCurrency().concat(" ").concat(transactionList.getTransactionAmount());
         holder.mCategoryName.setText(transactionList.getTransactionCategoryType());
-        holder.mAmountView.setText(transactionList.getTransactionAmount());
+        holder.mAmountView.setText(amountWithCurrency);
+        int amount = Integer.parseInt(transactionList.getTransactionAmount());
+        double percentage = ((double) amount / mTotal) * 100;
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
+        decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+        String percentageText = decimalFormat.format(percentage) + "%";
+
+        holder.mPercentage.setText(percentageText);
     }
 
     @Override
