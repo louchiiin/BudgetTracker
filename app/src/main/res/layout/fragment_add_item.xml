@@ -61,17 +61,6 @@
             android:layout_width="5dp"
             android:layout_height="wrap_content" />
 
-        <!--<Button
-            android:id="@+id/transfer_button"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.5"
-            android:background="@drawable/custom_button_black_stroke_white_fill"
-            android:maxLines="1"
-            android:text="Transfer"
-            android:textColor="@color/black"
-            android:textSize="12sp"
-            app:backgroundTint="@null" />-->
         <FrameLayout
             android:id="@+id/transfer_button"
             android:layout_width="0dp"

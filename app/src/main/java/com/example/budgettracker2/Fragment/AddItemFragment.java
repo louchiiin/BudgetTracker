@@ -84,6 +84,7 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     private boolean mIsCategoryLoading = false;
     private TextView mAccountTxtView;
     private TextView mCategoryTxtView;
+    private int mSelectedAccount; //0 - From , 1 - To
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -137,6 +138,7 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
         mSelectedTransaction = EnumDeclarations.EXPENSE.getValue();
         mOriginalDrawable = R.drawable.custom_button_black_stroke_white_fill;
         mClickedDrawable = R.drawable.custom_button_black_stroke_red_fill;
+        updateButtonBackground(); //set default button background
 
         mIncomeBtn.setOnClickListener(mOnClickListener);
         mExpenseBtn.setOnClickListener(mOnClickListener);
@@ -190,30 +192,24 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.income_button: {
-                    mIncomeBtn.setBackgroundResource(mClickedDrawable);
-                    mExpenseBtn.setBackgroundResource(mOriginalDrawable);
-                    mTransferBtn.setBackgroundResource(mOriginalDrawable);
                     mSelectedTransaction = EnumDeclarations.INCOME.getValue();
+                    updateButtonBackground();
                     updateAccountAndCategoryText(false);
                     clearFields(false);
                     mTransactions.setTransactionType(EnumDeclarations.INCOME.getValue());
                     break;
                 }
                 case R.id.expense_button: {
-                    mIncomeBtn.setBackgroundResource(mOriginalDrawable);
-                    mExpenseBtn.setBackgroundResource(mClickedDrawable);
-                    mTransferBtn.setBackgroundResource(mOriginalDrawable);
                     mSelectedTransaction = EnumDeclarations.EXPENSE.getValue();
+                    updateButtonBackground();
                     updateAccountAndCategoryText(false);
                     clearFields(false);
                     mTransactions.setTransactionType(EnumDeclarations.EXPENSE.getValue());
                     break;
                 }
                 case R.id.transfer_button: {
-                    mIncomeBtn.setBackgroundResource(mOriginalDrawable);
-                    mExpenseBtn.setBackgroundResource(mOriginalDrawable);
-                    mTransferBtn.setBackgroundResource(mClickedDrawable);
                     mSelectedTransaction = EnumDeclarations.TRANSFER.getValue();
+                    updateButtonBackground();
                     updateAccountAndCategoryText(true);
                     clearFields(false);
                     mTransactions.setTransactionType(EnumDeclarations.TRANSFER.getValue());
@@ -231,6 +227,9 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     mAccountsView.setVisibility(View.VISIBLE);
                     mCategoryView.setVisibility(View.GONE);
                     mSaveView.setVisibility(View.INVISIBLE);
+                    if(mSelectedTransaction == EnumDeclarations.TRANSFER.getValue()) {
+                        mSelectedAccount = 0;
+                    }
                     mAmountView.clearFocus();
                     mNoteView.clearFocus();
                     mSelectAccount.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_bottom, null));
@@ -239,13 +238,23 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     break;
                 }
                 case R.id.select_category:{
-                    mAccountsView.setVisibility(View.GONE);
-                    mCategoryView.setVisibility(View.VISIBLE);
                     mSaveView.setVisibility(View.INVISIBLE);
+                    if(mSelectedTransaction == EnumDeclarations.TRANSFER.getValue()) {
+                        mSelectedAccount = 1;
+                        mAccountsView.setVisibility(View.VISIBLE);
+                        mCategoryView.setVisibility(View.GONE);
+                    } else {
+                        mAccountsView.setVisibility(View.GONE);
+                        mCategoryView.setVisibility(View.VISIBLE);
+                    }
                     mAmountView.clearFocus();
                     mNoteView.clearFocus();
                     mSelectCategory.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_bottom, null));
-                    fetchCategory();
+                    if(mSelectedAccount == 1) {
+                        fetchAccount();
+                    } else {
+                        fetchCategory();
+                    }
                     closeKeyboard();
                     break;
                 }
@@ -327,6 +336,22 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
             }
         }
     };
+
+    private void updateButtonBackground() {
+        if(mSelectedTransaction == EnumDeclarations.EXPENSE.getValue()) {
+            mIncomeBtn.setBackgroundResource(mOriginalDrawable);
+            mExpenseBtn.setBackgroundResource(mClickedDrawable);
+            mTransferBtn.setBackgroundResource(mOriginalDrawable);
+        } else if(mSelectedTransaction == EnumDeclarations.INCOME.getValue()) {
+            mIncomeBtn.setBackgroundResource(mClickedDrawable);
+            mExpenseBtn.setBackgroundResource(mOriginalDrawable);
+            mTransferBtn.setBackgroundResource(mOriginalDrawable);
+        } else if(mSelectedTransaction == EnumDeclarations.TRANSFER.getValue()) {
+            mIncomeBtn.setBackgroundResource(mOriginalDrawable);
+            mExpenseBtn.setBackgroundResource(mOriginalDrawable);
+            mTransferBtn.setBackgroundResource(mClickedDrawable);
+        }
+    }
 
     private void updateAccountAndCategoryText(boolean isTransferBtnClicked) {
         if(isTransferBtnClicked) {
@@ -506,7 +531,11 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
             @Override
             public void onClick(View v) {
                 if (isAccount) {
-                    mSelectAccount.setText(buttonText);
+                    if(mSelectedAccount == 1) {
+                        mSelectCategory.setText(buttonText);
+                    } else {
+                        mSelectAccount.setText(buttonText);
+                    }
                 } else {
                     mSelectCategory.setText(buttonText);
                 }
