@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.example.budgettracker2.Adapter.TransactionAdapter;
 import com.example.budgettracker2.CategoryOptionsManager;
-import com.example.budgettracker2.ManagerCallback;
+import com.example.budgettracker2.Interfaces.ManagerCallback;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
 import com.github.mikephil.charting.charts.PieChart;
@@ -230,6 +230,9 @@ public class StatsFragment extends Fragment {
     }
 
     private void initializeGraph() {
+        if(!isAdded()) {
+            return;
+        }
         List<PieEntry> entries = new ArrayList<>();
         for (TransactionList transaction : mTransactionList) {
             int percentage = Integer.parseInt(transaction.getTransactionAmount());
@@ -240,7 +243,7 @@ public class StatsFragment extends Fragment {
 
 
         PieDataSet dataSet = new PieDataSet(entries, "TransactionList");
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
         dataSet.setSliceSpace(2f);
         dataSet.setValueTextSize(16f); // Set the text size to 14
         dataSet.setValueTextColor(getResources().getColor(R.color.white)); // Set the text color (optional)

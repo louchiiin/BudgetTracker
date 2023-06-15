@@ -1,4 +1,4 @@
-package com.example.budgettracker2;
+package com.example.budgettracker2.Interfaces;
 
 public interface ManagerCallback {
     void onFinish();

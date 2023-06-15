@@ -12,4 +12,7 @@ public class Constants {
     public static String TRANSACTION_AMOUNT = "transaction_amount";
     public static String TRANSACTION_NOTE = "transaction_note";
     public static String TRANSACTION_DESCRIPTION = "transaction_description";
+    //fragment tags
+    public static String STATUS_FRAGMENT = "status_fragment";
+    public static String HOME_FRAGMENT = "home_fragment";
 }
