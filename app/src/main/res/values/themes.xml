@@ -12,6 +12,7 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="21">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+        <item name="android:fontFamily">@font/geologica_regular</item>
     </style>
 
     <style name="AppTheme.AlertDialog" parent="Theme.AppCompat.Light.Dialog.Alert">
