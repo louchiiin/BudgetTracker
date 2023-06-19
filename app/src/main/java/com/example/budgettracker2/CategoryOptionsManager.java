@@ -209,7 +209,6 @@ public class CategoryOptionsManager {
                     });
                 }
 
-                Log.d(MY_TAG, "onDataChange: " + new Gson().toJson(mTransactionList));
 
                 if (callback != null) {
                     callback.onFinish();

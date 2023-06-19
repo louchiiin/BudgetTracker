@@ -34,6 +34,8 @@ public class HomeActivity extends AppCompatActivity {
     private HomeFragment mHomeFragment;
     private boolean mIsMenuTapped = false;
     private FragmentUtils mFragmentUtils;
+    private boolean mIsStatusFragmentVisible = false;
+    private boolean mIsHomeFragmentVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,15 +65,22 @@ public class HomeActivity extends AppCompatActivity {
                         mIsMenuTapped = true;
                         onBackPressed();
                         if(mFragmentUtils != null) {
-                            mFragmentUtils.replaceFragment(new HomeBaseFragment(), R.id.home_content, "home_base_fragment", false);
+                            mFragmentUtils.replaceFragment(new HomeBaseFragment(), R.id.home_content, Constants.HOME_BASE_FRAGMENT, false);
                         }
                         mIsMenuTapped = false;
+                        mIsHomeFragmentVisible = true;
+                        mIsStatusFragmentVisible = false;
+                        checkIfStatusFragmentIsVisible();
                         return true;
                     case R.id.navigation_item_2:
                         mIsMenuTapped = true;
                         onBackPressed();
-                        initializeStatsFragment();
+                        if(mFragmentUtils != null) {
+                            mFragmentUtils.replaceFragment(new StatsFragment(), R.id.home_content, Constants.STATUS_FRAGMENT, false);
+                        }
                         mIsMenuTapped = false;
+                        mIsHomeFragmentVisible = false;
+                        mIsStatusFragmentVisible = true;
                         checkIfStatusFragmentIsVisible();
                         return true;
                     case R.id.navigation_item_3:
@@ -81,12 +90,6 @@ public class HomeActivity extends AppCompatActivity {
                 return false;
             }
         });
-    }
-
-    private void initializeStatsFragment() {
-        if(mFragmentUtils != null) {
-            mFragmentUtils.replaceFragment(new StatsFragment(), R.id.home_content, Constants.STATUS_FRAGMENT, false);
-        }
     }
 
     private void getArgs() {
@@ -108,15 +111,16 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void checkIfStatusFragmentIsVisible() {
-        StatsFragment statsFragment = (StatsFragment) getSupportFragmentManager().findFragmentByTag(Constants.STATUS_FRAGMENT);
-        boolean isStatusFragmentVisible = (statsFragment != null && statsFragment.isVisible());
         HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(Constants.HOME_FRAGMENT);
-        boolean isHomeFragmentVisible = (homeFragment != null && homeFragment.isVisible());
-        if (isStatusFragmentVisible && isHomeFragmentVisible) {
-            if(homeFragment.getView() != null) {
+        if(homeFragment != null && homeFragment.getView() != null) {
+            if (mIsStatusFragmentVisible) {
                 homeFragment.getView().findViewById(R.id.actionBar_add).setVisibility(View.GONE);
                 TextView textView = homeFragment.getView().findViewById(R.id.actionBar_title);
-                textView.setText("Statistics");
+                textView.setText(getString(R.string.statistics_title));
+            } else {
+                homeFragment.getView().findViewById(R.id.actionBar_add).setVisibility(View.VISIBLE);
+                TextView textView = homeFragment.getView().findViewById(R.id.actionBar_title);
+                textView.setText(getString(R.string.home_title));
             }
         }
     }
@@ -130,7 +134,7 @@ public class HomeActivity extends AppCompatActivity {
             mHomeFragment = (HomeFragment) currentFragment;
         }
 
-        if (count == 1 && !mHomeFragment.isSideMenuOpen()) {
+        if (count == 0 && !mHomeFragment.isSideMenuOpen()) {
             if(!mIsMenuTapped) {
                 createDialogExit();
             }

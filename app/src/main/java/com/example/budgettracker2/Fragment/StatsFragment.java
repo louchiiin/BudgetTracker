@@ -151,7 +151,6 @@ public class StatsFragment extends Fragment {
                     mPieChartContainer.setVisibility(View.VISIBLE);
                     mListContainer.setVisibility(View.VISIBLE);
                 }
-                Log.d("LOUCHIIIN", "mTOOOTAL " + mTotal);
                 calculateTotal();
                 initializeRecyclerView();
                 initializeGraph();
@@ -170,7 +169,6 @@ public class StatsFragment extends Fragment {
             int amount = Integer.parseInt(transaction.getTransactionAmount());
             mTotal += amount;
         }
-        Log.d("LOUCHIIIN", "mTotal " + mTotal);
     }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {

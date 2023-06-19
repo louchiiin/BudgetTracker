@@ -15,4 +15,5 @@ public class Constants {
     //fragment tags
     public static String STATUS_FRAGMENT = "status_fragment";
     public static String HOME_FRAGMENT = "home_fragment";
+    public static String HOME_BASE_FRAGMENT = "home_base_fragment";
 }
