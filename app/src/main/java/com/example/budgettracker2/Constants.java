@@ -16,4 +16,5 @@ public class Constants {
     public static String STATUS_FRAGMENT = "status_fragment";
     public static String HOME_FRAGMENT = "home_fragment";
     public static String HOME_BASE_FRAGMENT = "home_base_fragment";
+    public static String ADD_ITEM_FRAGMENT = "add_item_fragment";
 }

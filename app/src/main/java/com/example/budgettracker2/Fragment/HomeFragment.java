@@ -23,6 +23,7 @@ import android.widget.TextView;
 import com.example.budgettracker2.CacheManager;
 import com.example.budgettracker2.Activity.HomeActivity;
 import com.example.budgettracker2.Activity.MainActivity;
+import com.example.budgettracker2.Constants;
 import com.example.budgettracker2.R;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,7 +36,6 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
     public ImageView mOpenSideMenu;
     public ImageView mAddButton;
     public TextView mHeaderTitle;
-    private String ADD_ITEM_FRAGMENT = "add_item_fragment";
     private FragmentUtils mFragmentUtils;
     public HomeFragment() {
         // Required empty public constructor
@@ -136,7 +136,7 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
                 case R.id.actionBar_add: {
                     Log.d(MY_TAG, "add");
                     if(mFragmentUtils != null) {
-                        mFragmentUtils.showFragment(new AddItemFragment(), R.id.home_content, ADD_ITEM_FRAGMENT, true);
+                        mFragmentUtils.showFragment(new AddItemFragment(), R.id.home_content, Constants.ADD_ITEM_FRAGMENT, true);
                     }
                     mAddButton.setVisibility(View.GONE);
                     mHeaderTitle.setText(getString(R.string.transactions_title));
