@@ -3,7 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:id="@+id/transaction_item_container"
+    android:background="?selectableItemBackground"
+    android:focusable="true"
+    android:clickable="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,7 +31,7 @@
             android:text="100%"
             android:gravity="center"
             android:textColor="@color/black"
-            android:textSize="12sp"
+            android:textSize="10sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,7 +46,7 @@
             android:layout_marginLeft="10dp"
             android:text="Test Only"
             android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:textStyle="bold" />
 
         <TextView
@@ -53,7 +57,7 @@
             android:gravity="start"
             android:text="100000"
             android:textColor="@color/black"
-            android:textSize="16sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

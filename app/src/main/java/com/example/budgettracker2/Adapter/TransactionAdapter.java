@@ -1,15 +1,22 @@
 package com.example.budgettracker2.Adapter;
 
+import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
+
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.budgettracker2.CategoryOptionsManager;
+import com.example.budgettracker2.Fragment.FragmentUtils;
+import com.example.budgettracker2.Fragment.TransactionItemFragment;
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
@@ -60,6 +67,25 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         String percentageText = roundedPercentage + "%";
 
         holder.mPercentage.setText(percentageText);
+        //create a condition that will change the color of the background based on the percentage
+        if (roundedPercentage >= 0 && roundedPercentage <= 25) {
+            holder.mPercentage.setBackgroundResource(R.drawable.custom_box_green);
+        } else if (roundedPercentage > 25 && roundedPercentage <= 50) {
+            holder.mPercentage.setBackgroundResource(R.drawable.custom_box_yellow);
+        } else if (roundedPercentage > 50 && roundedPercentage <= 75) {
+            holder.mPercentage.setBackgroundResource(R.drawable.custom_box_orange);
+        } else if (roundedPercentage > 75 && roundedPercentage <= 100) {
+            holder.mPercentage.setBackgroundResource(R.drawable.custom_box_red);
+        }
+
+        holder.mTransactionItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(MY_TAG, "onClick: ");
+                FragmentUtils.getInstance(((AppCompatActivity) mActivity).getSupportFragmentManager())
+                        .showFragment(new TransactionItemFragment(), R.id.home_content, "transaction_item_fragment", true);
+            }
+        });
     }
 
     @Override
@@ -71,12 +97,14 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         private TextView mPercentage;
         private TextView mCategoryName;
         private TextView mAmountView;
+        private ConstraintLayout mTransactionItem;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             //initialize all textview
             mPercentage = itemView.findViewById(R.id.percentage_indicator);
             mCategoryName = itemView.findViewById(R.id.category_textView);
             mAmountView = itemView.findViewById(R.id.amount_textView);
+            mTransactionItem = itemView.findViewById(R.id.transaction_item_container);
         }
     }
 }

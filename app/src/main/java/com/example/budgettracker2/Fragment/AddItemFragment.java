@@ -31,7 +31,7 @@ import com.example.budgettracker2.Constants;
 import com.example.budgettracker2.CustomMaxWidthFrameLayout;
 import com.example.budgettracker2.Activity.EditActivity;
 import com.example.budgettracker2.EnumDeclarations;
-import com.example.budgettracker2.ManagerCallback;
+import com.example.budgettracker2.Interfaces.ManagerCallback;
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.CategoryList;
 import com.example.budgettracker2.Model.TransactionList;

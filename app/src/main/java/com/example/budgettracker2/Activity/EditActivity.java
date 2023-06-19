@@ -19,7 +19,7 @@ import android.widget.TextView;
 import com.example.budgettracker2.Adapter.EditAdapter;
 import com.example.budgettracker2.CategoryOptionsManager;
 import com.example.budgettracker2.Constants;
-import com.example.budgettracker2.ManagerCallback;
+import com.example.budgettracker2.Interfaces.ManagerCallback;
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.CategoryList;
 import com.example.budgettracker2.R;

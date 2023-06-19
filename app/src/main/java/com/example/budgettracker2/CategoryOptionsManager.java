@@ -5,12 +5,11 @@ import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
+import com.example.budgettracker2.Interfaces.ManagerCallback;
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.CategoryList;
 import com.example.budgettracker2.Model.TransactionList;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -210,7 +209,6 @@ public class CategoryOptionsManager {
                     });
                 }
 
-                Log.d(MY_TAG, "onDataChange: " + new Gson().toJson(mTransactionList));
 
                 if (callback != null) {
                     callback.onFinish();

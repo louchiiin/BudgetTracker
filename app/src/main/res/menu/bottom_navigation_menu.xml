@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_item_1"
+        android:icon="@drawable/ic_home_blue_circular"
+        android:title="Home" />
+
+    <item
+        android:id="@+id/navigation_item_2"
+        android:icon="@drawable/ic_chart"
+        android:title="Stats" />
+
+    <item
+        android:id="@+id/navigation_item_3"
+        android:icon="@drawable/ic_accounting"
+        android:title="Accounts" />
+</menu>

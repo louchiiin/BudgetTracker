@@ -11,8 +11,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +23,7 @@ import android.widget.TextView;
 import com.example.budgettracker2.CacheManager;
 import com.example.budgettracker2.Activity.HomeActivity;
 import com.example.budgettracker2.Activity.MainActivity;
+import com.example.budgettracker2.Constants;
 import com.example.budgettracker2.R;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -34,10 +33,10 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
     private DrawerLayout mSideMenu;
     private NavigationView mNavigationView;
     private View mConvertView;
-    private ImageView mOpenSideMenu;
-    private ImageView mAddButton;
-    private TextView mHeaderTitle;
-    private String ADD_ITEM_FRAGMENT = "add_item_fragment";
+    public ImageView mOpenSideMenu;
+    public ImageView mAddButton;
+    public TextView mHeaderTitle;
+    private FragmentUtils mFragmentUtils;
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -54,9 +53,13 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
         mAddButton = mConvertView.findViewById(R.id.actionBar_add);
         mHeaderTitle = mConvertView.findViewById(R.id.actionBar_title);
 
-        mHeaderTitle.setText("Home");
+        mHeaderTitle.setText(getString(R.string.home_title));
         mOpenSideMenu.setOnClickListener(mListener);
         mAddButton.setOnClickListener(mListener);
+        if(getActivity() != null) {
+            mFragmentUtils = FragmentUtils.getInstance(getActivity().getSupportFragmentManager());
+        }
+        initializedHomeBaseFragment();
 
         mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -100,34 +103,12 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
                 return true;
             }
         });
-        displayStatFragment();
-        fetchTransaction();
         return mConvertView;
     }
 
-    private void fetchTransaction() {
-        /*CategoryOptionsManager.getInstance().requestFetchTransaction(new ManagerCallback() {
-            @Override
-            public void onFinish() {
-                Log.d(MY_TAG, "onFinish: ");
-            }
-
-            @Override
-            public void onError(String error) {
-
-            }
-        });*/
-    }
-
-
-    private void displayStatFragment() {
-        if(getActivity() != null) {
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            StatsFragment statsFragment = new StatsFragment();
-            fragmentTransaction.add(R.id.home_content, statsFragment, "status_fragment");
-            //fragmentTransaction.addToBackStack(null);
-            fragmentTransaction.commit();
+    private void initializedHomeBaseFragment() {
+        if(mFragmentUtils != null) {
+            mFragmentUtils.replaceFragment(new HomeBaseFragment(), R.id.home_content, "home_base_fragment", false);
         }
     }
 
@@ -154,16 +135,8 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
                 }
                 case R.id.actionBar_add: {
                     Log.d(MY_TAG, "add");
-                    if(getActivity() != null) {
-                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                        Fragment addItemFrag = fragmentManager.findFragmentByTag(ADD_ITEM_FRAGMENT);
-                        if(addItemFrag == null) {
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            AddItemFragment addItemFragment = new AddItemFragment();
-                            fragmentTransaction.replace(R.id.home_content, addItemFragment, ADD_ITEM_FRAGMENT);
-                            fragmentTransaction.addToBackStack(null);
-                            fragmentTransaction.commit();
-                        }
+                    if(mFragmentUtils != null) {
+                        mFragmentUtils.showFragment(new AddItemFragment(), R.id.home_content, Constants.ADD_ITEM_FRAGMENT, true);
                     }
                     mAddButton.setVisibility(View.GONE);
                     mHeaderTitle.setText(getString(R.string.transactions_title));
@@ -179,7 +152,6 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
 
         checkFirebaseAuth();
     }
-
     @Override
     public void onUpdateText(String newText) {
         mHeaderTitle.setText(newText);
