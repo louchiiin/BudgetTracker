@@ -1,6 +1,13 @@
 package com.example.budgettracker2.Model;
 
-public class TransactionList {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+import java.util.ArrayList;
+
+public class TransactionList implements Parcelable {
     private int mTransactionType;
 
     private String mTransactionId;
@@ -10,6 +17,44 @@ public class TransactionList {
     private String mTransactionCategoryType;
     private String mTransactionDescription;
     private String mTransactionNote;
+    private String mTransactionCombinedAmount;
+    private ArrayList<String> mCombinedTransactionIds = new ArrayList<>();
+
+    public TransactionList() {
+
+    }
+
+    protected TransactionList(Parcel in) {
+        mTransactionType = in.readInt();
+        mTransactionId = in.readString();
+        mTransactionDate = in.readString();
+        mTransactionAmount = in.readString();
+        mTransactionAccountType = in.readString();
+        mTransactionCategoryType = in.readString();
+        mTransactionDescription = in.readString();
+        mTransactionNote = in.readString();
+        mCombinedTransactionIds = in.createStringArrayList();
+    }
+
+    public static final Creator<TransactionList> CREATOR = new Creator<TransactionList>() {
+        @Override
+        public TransactionList createFromParcel(Parcel in) {
+            return new TransactionList(in);
+        }
+
+        @Override
+        public TransactionList[] newArray(int size) {
+            return new TransactionList[size];
+        }
+    };
+
+    public ArrayList<String> getCombinedIds() {
+        return mCombinedTransactionIds;
+    }
+
+    public void setIds(ArrayList<String> ids) {
+        this.mCombinedTransactionIds = ids;
+    }
 
     public int getTransactionType() {
         return mTransactionType;
@@ -43,6 +88,14 @@ public class TransactionList {
         this.mTransactionAmount = mTransactionAmount;
     }
 
+    public String getTransactionCombinedAmount() {
+        return mTransactionCombinedAmount;
+    }
+
+    public void setTransactionCombinedAmount(String transactionAmount) {
+        this.mTransactionCombinedAmount = transactionAmount;
+    }
+
     public String getTransactionAccountType() {
         return mTransactionAccountType;
     }
@@ -73,5 +126,23 @@ public class TransactionList {
 
     public void setTransactionNote(String mTransactionNote) {
         this.mTransactionNote = mTransactionNote;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(@NonNull Parcel parcel, int i) {
+            parcel.writeInt(mTransactionType);
+            parcel.writeString(mTransactionId);
+            parcel.writeString(mTransactionDate);
+            parcel.writeString(mTransactionAmount);
+            parcel.writeString(mTransactionAccountType);
+            parcel.writeString(mTransactionCategoryType);
+            parcel.writeString(mTransactionDescription);
+            parcel.writeString(mTransactionNote);
+            parcel.writeStringList(mCombinedTransactionIds);
     }
 }

@@ -62,20 +62,17 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser != null) {
-            Log.d(MY_TAG, "test");
             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
             intent.putExtra(FIREBASE_USER_ID, currentUser.getUid());
             intent.putExtra(FIREBASE_USER_EMAIL, currentUser.getEmail());
             startActivity(intent);
             finish();
         }
-        Log.d(MY_TAG, "onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(MY_TAG, "onResume");
     }
 
     private View.OnClickListener mListener = new View.OnClickListener() {

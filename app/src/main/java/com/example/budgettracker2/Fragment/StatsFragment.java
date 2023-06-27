@@ -54,6 +54,7 @@ public class StatsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private TransactionAdapter mAdapter;
     private ArrayList<TransactionList> mTransactionList;
+    private ArrayList<TransactionList> mCombinedTransactionList;
     private View mExpensesSelection;
     private View mIncomeSelection;
     private ConstraintLayout mNoDataView;
@@ -104,7 +105,7 @@ public class StatsFragment extends Fragment {
     }
 
     private void initializeRecyclerView() {
-        mAdapter = new TransactionAdapter(getActivity(), mTransactionList);
+        mAdapter = new TransactionAdapter(getActivity(), mTransactionList, mTransactionType, mCombinedTransactionList);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -115,10 +116,11 @@ public class StatsFragment extends Fragment {
             public void onFinish() {
                 mLoadingView.setVisibility(View.GONE);
                 mTransactionList = new ArrayList<TransactionList>();
+                mCombinedTransactionList = new ArrayList<TransactionList>();
                 mTransactionList = CategoryOptionsManager.getInstance().getTransactionList();
+                mCombinedTransactionList = CategoryOptionsManager.getInstance().getTransactionList();
                 // Create a new list to store the combined transactions
                 ArrayList<TransactionList> combinedTransactions = new ArrayList<>();
-
                 // Iterate over the transactions
                 for (TransactionList transaction : mTransactionList) {
                     boolean found = false;
@@ -128,7 +130,9 @@ public class StatsFragment extends Fragment {
                         if (transaction.getTransactionCategoryType().equals(combinedTransaction.getTransactionCategoryType())) {
                             // If a transaction with the same name is found, combine them
                             String result = String.valueOf(Integer.parseInt(combinedTransaction.getTransactionAmount()) + Integer.parseInt(transaction.getTransactionAmount()));
-                            combinedTransaction.setTransactionAmount(result);
+                            //add transaction id to combined list
+                            combinedTransaction.setTransactionCombinedAmount(result);
+                            combinedTransaction.getCombinedIds().add(transaction.getTransactionId());
                             found = true;
                             break;
                         }
@@ -136,6 +140,8 @@ public class StatsFragment extends Fragment {
 
                     // If no transaction with the same name was found, add the transaction to the combined list
                     if (!found) {
+                        //add transaction id to combined list
+                        transaction.getCombinedIds().add(transaction.getTransactionId());
                         combinedTransactions.add(transaction);
                     }
                 }
@@ -280,6 +286,4 @@ public class StatsFragment extends Fragment {
         super.onResume();
         fetchList();
     }
-
-    //create a recyclerview adapter class
 }

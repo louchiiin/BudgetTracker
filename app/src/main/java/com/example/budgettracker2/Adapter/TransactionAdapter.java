@@ -1,9 +1,7 @@
 package com.example.budgettracker2.Adapter;
 
-import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
-
 import android.app.Activity;
-import android.util.Log;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,10 +24,15 @@ import java.util.ArrayList;
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.ViewHolder> {
     private Activity mActivity;
     private ArrayList<?> mDataList;
+    private ArrayList<TransactionList> mTransactionListWithOutCombination;
+    private String mTransactionType;
     int mTotal = 0;
-    public TransactionAdapter(Activity activity, ArrayList<?> list) {
+    public TransactionAdapter(Activity activity, ArrayList<?> list, String transactionType, ArrayList<TransactionList> transactionList) {
         this.mActivity = activity;
         this.mDataList = list;
+        this.mTransactionListWithOutCombination = transactionList;
+
+        mTransactionType = transactionType;
         calculateTotal();
     }
 
@@ -58,10 +61,10 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     @Override
     public void onBindViewHolder(@NonNull TransactionAdapter.ViewHolder holder, int position) {
         TransactionList transactionList = (TransactionList) mDataList.get(position);
-        String amountWithCurrency = CategoryOptionsManager.getInstance().getCurrency().concat(" ").concat(transactionList.getTransactionAmount());
+        String amountWithCurrency = CategoryOptionsManager.getInstance().getCurrency().concat(" ").concat(transactionList.getTransactionCombinedAmount() == null ? transactionList.getTransactionAmount() : transactionList.getTransactionCombinedAmount());
         holder.mCategoryName.setText(transactionList.getTransactionCategoryType());
         holder.mAmountView.setText(amountWithCurrency);
-        int amount = Integer.parseInt(transactionList.getTransactionAmount());
+        int amount = Integer.parseInt(transactionList.getTransactionCombinedAmount() == null ? transactionList.getTransactionAmount() : transactionList.getTransactionCombinedAmount());
         double percentage = ((double) amount / mTotal) * 100;
         long roundedPercentage = Math.round(percentage);
         String percentageText = roundedPercentage + "%";
@@ -81,9 +84,14 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         holder.mTransactionItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(MY_TAG, "onClick: ");
+                TransactionItemFragment transactionItemFragment = new TransactionItemFragment();
+                Bundle args = new Bundle();
+                args.putString("transaction_type", mTransactionType);
+                args.putParcelable("transaction_list", transactionList);
+                args.putParcelableArrayList("transaction_array_list", mTransactionListWithOutCombination);
+                transactionItemFragment.setArguments(args);
                 FragmentUtils.getInstance(((AppCompatActivity) mActivity).getSupportFragmentManager())
-                        .showFragment(new TransactionItemFragment(), R.id.home_content, "transaction_item_fragment", true);
+                        .showFragment(transactionItemFragment, R.id.home_content, "transaction_item_fragment", true);
             }
         });
     }
