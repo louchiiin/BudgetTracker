@@ -18,8 +18,8 @@ import android.widget.TextView;
 import com.example.budgettracker2.CacheManager;
 import com.example.budgettracker2.Constants;
 import com.example.budgettracker2.Fragment.FragmentUtils;
-import com.example.budgettracker2.Fragment.HomeBaseFragment;
 import com.example.budgettracker2.Fragment.HomeFragment;
+import com.example.budgettracker2.Fragment.HomeBaseFragment;
 import com.example.budgettracker2.Fragment.StatsFragment;
 import com.example.budgettracker2.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -31,7 +31,7 @@ public class HomeActivity extends AppCompatActivity {
         void onUpdateText(String newText);
     }
     private BottomNavigationView mBottomNavigationView;
-    private HomeFragment mHomeFragment;
+    private HomeBaseFragment mHomeBaseFragment;
     private boolean mIsMenuTapped = false;
     private FragmentUtils mFragmentUtils;
     private boolean mIsStatusFragmentVisible = false;
@@ -50,7 +50,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void initializeBaseFragment() {
         if(mFragmentUtils != null) {
-            mFragmentUtils.showFragment(new HomeFragment(), R.id.home_layout, Constants.HOME_FRAGMENT, false);
+            mFragmentUtils.showFragment(new HomeBaseFragment(), R.id.home_layout, Constants.HOME_BASE_FRAGMENT, false);
         }
     }
 
@@ -65,7 +65,7 @@ public class HomeActivity extends AppCompatActivity {
                         mIsMenuTapped = true;
                         onBackPressed();
                         if(mFragmentUtils != null) {
-                            mFragmentUtils.replaceFragment(new HomeBaseFragment(), R.id.home_content, Constants.HOME_BASE_FRAGMENT, false);
+                            mFragmentUtils.replaceFragment(new HomeFragment(), R.id.home_content, Constants.HOME_FRAGMENT, false);
                         }
                         mIsMenuTapped = false;
                         mIsHomeFragmentVisible = true;
@@ -111,15 +111,15 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void checkIfStatusFragmentIsVisible() {
-        HomeFragment homeFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag(Constants.HOME_FRAGMENT);
-        if(homeFragment != null && homeFragment.getView() != null) {
+        HomeBaseFragment homeBaseFragment = (HomeBaseFragment) getSupportFragmentManager().findFragmentByTag(Constants.HOME_BASE_FRAGMENT);
+        if(homeBaseFragment != null && homeBaseFragment.getView() != null) {
             if (mIsStatusFragmentVisible) {
-                homeFragment.getView().findViewById(R.id.actionBar_add).setVisibility(View.GONE);
-                TextView textView = homeFragment.getView().findViewById(R.id.actionBar_title);
+                homeBaseFragment.getView().findViewById(R.id.actionBar_add).setVisibility(View.GONE);
+                TextView textView = homeBaseFragment.getView().findViewById(R.id.actionBar_title);
                 textView.setText(getString(R.string.statistics_title));
             } else {
-                homeFragment.getView().findViewById(R.id.actionBar_add).setVisibility(View.VISIBLE);
-                TextView textView = homeFragment.getView().findViewById(R.id.actionBar_title);
+                homeBaseFragment.getView().findViewById(R.id.actionBar_add).setVisibility(View.VISIBLE);
+                TextView textView = homeBaseFragment.getView().findViewById(R.id.actionBar_title);
                 textView.setText(getString(R.string.home_title));
             }
         }
@@ -129,26 +129,33 @@ public class HomeActivity extends AppCompatActivity {
     public void onBackPressed() {
         int count = getSupportFragmentManager().getBackStackEntryCount();
 
-        Fragment currentFragment = getSupportFragmentManager().findFragmentByTag(Constants.HOME_FRAGMENT);
-        if(currentFragment instanceof HomeFragment) {
-            mHomeFragment = (HomeFragment) currentFragment;
+        Fragment homeBaseFragment = getSupportFragmentManager().findFragmentByTag(Constants.HOME_BASE_FRAGMENT);
+        Fragment statsFragment = getSupportFragmentManager().findFragmentByTag(Constants.STATUS_FRAGMENT);
+        Fragment homeFragment = getSupportFragmentManager().findFragmentByTag(Constants.HOME_FRAGMENT);
+        if(homeBaseFragment instanceof HomeBaseFragment) {
+            mHomeBaseFragment = (HomeBaseFragment) homeBaseFragment;
         }
 
-        if (count == 0 && !mHomeFragment.isSideMenuOpen()) {
+        if (count == 0 && !mHomeBaseFragment.isSideMenuOpen()) {
             if(!mIsMenuTapped) {
                 createDialogExit();
             }
-        } else if(mHomeFragment.isSideMenuOpen()) {
-            mHomeFragment.closeSideMenu();
+        } else if(mHomeBaseFragment.isSideMenuOpen()) {
+            mHomeBaseFragment.closeSideMenu();
         } else {
             getSupportFragmentManager().popBackStack();
 
-            if (currentFragment instanceof TextUpdateListener) {
+            if (homeBaseFragment instanceof TextUpdateListener) {
                 // Call the onUpdateText() method in the current fragment via the listener
-                TextUpdateListener listener = (TextUpdateListener) currentFragment;
-                listener.onUpdateText(getString(R.string.home_title));
+                TextUpdateListener listener = (TextUpdateListener) homeBaseFragment;
+                if(homeFragment != null && homeFragment.isVisible()) {
+                    listener.onUpdateText(getString(R.string.home_title));
+                    mHomeBaseFragment.onBack();
+                }
+                if(statsFragment != null && statsFragment.isVisible()) {
+                    listener.onUpdateText(getString(R.string.statistics_title));
+                }
             }
-            mHomeFragment.onBack();
         }
     }
 
