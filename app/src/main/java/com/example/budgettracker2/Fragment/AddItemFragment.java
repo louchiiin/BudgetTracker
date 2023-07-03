@@ -37,10 +37,15 @@ import com.example.budgettracker2.Model.CategoryList;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
 import com.github.ybq.android.spinkit.SpinKitView;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +53,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class AddItemFragment extends Fragment implements DatePickerDialogFragment.OnSelectedDate{
     private View mConvertView;
@@ -85,21 +91,30 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     private TextView mAccountTxtView;
     private TextView mCategoryTxtView;
     private int mSelectedAccount; //0 - From , 1 - To
+    private boolean mIsUpdate = false;
     private String mTransactionType;
     private String mTransactionDate;
     private String mTransactionId;
     private String mTransactionAccountType;
     private String mTransactionCategoryType;
     private String mTransactionAmount;
+    private String mTransactionNote;
+    private String mTransactionDescription;
 
-    public static Bundle createArguments(String transactionType, String transactionDate, String transactionId, String transactionAccountType, String transactionCategoryType, String transactionAmount) {
+    public static Bundle createArguments(boolean isUpdate, String transactionType, String transactionDate,
+                                         String transactionId, String transactionAccountType,
+                                         String transactionCategoryType, String transactionAmount,
+                                         String transactionNote, String transactionDescription) {
         Bundle args = new Bundle();
+        args.putBoolean(Constants.TRANSACTION_UPDATE, isUpdate);
         args.putString(Constants.TRANSACTION_TYPE, transactionType);
         args.putString(Constants.DATE_TRANSACTION_TYPE, transactionDate);
         args.putString(Constants.TRANSACTION_ID, transactionId);
         args.putString(Constants.TRANSACTION_ACCOUNT_TYPE, transactionAccountType);
         args.putString(Constants.TRANSACTION_CATEGORY_TYPE, transactionCategoryType);
         args.putString(Constants.TRANSACTION_AMOUNT, transactionAmount);
+        args.putString(Constants.TRANSACTION_NOTE, transactionNote);
+        args.putString(Constants.TRANSACTION_DESCRIPTION, transactionDescription);
         return args;
     }
 
@@ -188,12 +203,15 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
 
     private void getArgs() {
         if(getArguments() != null) {
+            mIsUpdate = getArguments().getBoolean(Constants.TRANSACTION_UPDATE);
             mTransactionType = getArguments().getString(Constants.TRANSACTION_TYPE);
             mTransactionDate = getArguments().getString(Constants.DATE_TRANSACTION_TYPE);
             mTransactionId = getArguments().getString(Constants.TRANSACTION_ID);
             mTransactionAccountType = getArguments().getString(Constants.TRANSACTION_ACCOUNT_TYPE);
             mTransactionCategoryType = getArguments().getString(Constants.TRANSACTION_CATEGORY_TYPE);
             mTransactionAmount = getArguments().getString(Constants.TRANSACTION_AMOUNT);
+            mTransactionNote = getArguments().getString(Constants.TRANSACTION_NOTE);
+            mTransactionDescription = getArguments().getString(Constants.TRANSACTION_DESCRIPTION);
 
             mDatePickerTextView.setText(mTransactionDate);
             mSelectAccount.setText(mTransactionAccountType);
@@ -367,7 +385,11 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     }
                     if(mSelectedTransaction != 0 && !datePickerText.equals("mm/dd/yyyy") && !selectAccountText.equals("")
                             && !selectCategoryText.equals("") && !amountText.equals("")) {
-                        saveTransaction();
+                        if(mIsUpdate) {
+                            updateTransaction();
+                        } else {
+                            saveTransaction();
+                        }
                     }
                     break;
                 }
@@ -379,6 +401,35 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
             }
         }
     };
+
+    private void updateTransaction() {
+        DatabaseReference transactionRef = FirebaseDatabase.getInstance().getReference();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(Constants.TRANSACTION_AMOUNT, mAmountView.getText().toString());
+        updates.put(Constants.TRANSACTION_ACCOUNT_TYPE, mSelectAccount.getText().toString());
+        updates.put(Constants.TRANSACTION_CATEGORY_TYPE, mSelectCategory.getText().toString());
+        updates.put(Constants.DATE_TRANSACTION_TYPE, mTransactionDate);
+        updates.put(Constants.TRANSACTION_NOTE, mNoteView.getText().toString());
+        updates.put(Constants.TRANSACTION_DESCRIPTION, mDescriptionView.getText().toString());
+
+        transactionRef.child(getString(R.string.transactions_title))
+                .child(mTransactionType)
+                .child(mTransactionId)
+                .updateChildren(updates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // Update successful
+                            mFullLoadingView.setVisibility(View.GONE);
+                        } else {
+                            // Update failed
+                            mFullLoadingView.setVisibility(View.GONE);
+                        }
+                    }
+                });
+    }
 
     private void updateButtonBackground() {
         if(mSelectedTransaction == EnumDeclarations.EXPENSE.getValue()) {

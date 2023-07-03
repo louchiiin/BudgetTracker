@@ -5,6 +5,7 @@ public class Constants {
     public static String CATEGORY_TYPE = "category_type";
 
     //add transaction item
+    public static String TRANSACTION_UPDATE = "transaction_update";
     public static String TRANSACTION_TYPE = "transaction_type";
     public static String DATE_TRANSACTION_TYPE = "transaction_date";
     public static String TRANSACTION_ID = "transaction_id";

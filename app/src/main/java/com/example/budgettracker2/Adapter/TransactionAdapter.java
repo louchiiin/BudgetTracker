@@ -2,6 +2,7 @@ package com.example.budgettracker2.Adapter;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.example.budgettracker2.Fragment.TransactionItemFragment;
 import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -49,12 +51,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         for (Object obj : mDataList) {
             if (obj instanceof TransactionList) {
                 TransactionList transaction = (TransactionList) obj;
-                int amount = Integer.parseInt(transaction.getTransactionAmount());
+                int amount = Integer.parseInt(transaction.getTransactionCombinedAmount() == null ? transaction.getTransactionAmount() : transaction.getTransactionCombinedAmount());
                 mTotal += amount;
-            } else if (obj instanceof AccountsList) {
-                AccountsList account = (AccountsList) obj;
-                // Perform operations specific to AccountList
-                // ...
             }
         }
     }

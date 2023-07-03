@@ -28,6 +28,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
+import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -94,7 +95,6 @@ public class StatsFragment extends Fragment {
 
         mTransactionType = EXPENSES; //on load load expenses
         checkSelectedButton();
-        fetchList();
         updateMonthAndYear();
         mNextMonth.setOnClickListener(mOnClickListener);
         mPreviousMonth.setOnClickListener(mOnClickListener);
@@ -172,7 +172,7 @@ public class StatsFragment extends Fragment {
     private void calculateTotal() {
         mTotal = 0;
         for (TransactionList transaction : mTransactionList) {
-            int amount = Integer.parseInt(transaction.getTransactionAmount());
+            int amount = Integer.parseInt(transaction.getTransactionCombinedAmount() == null ? transaction.getTransactionAmount() : transaction.getTransactionCombinedAmount());
             mTotal += amount;
         }
     }
@@ -231,6 +231,8 @@ public class StatsFragment extends Fragment {
         String formattedMonth = String.format(Locale.getDefault(),"%02d", mMonth);
         mFormattedFirstDay = formattedMonth + "/" + mFirstDayOfTheMonth + "/" + mYear;
         mFormattedLastDay = formattedMonth + "/" + mLastDayOfTheMonth + "/" + mYear;
+
+        fetchList();
     }
 
     private void initializeGraph() {
@@ -239,7 +241,7 @@ public class StatsFragment extends Fragment {
         }
         List<PieEntry> entries = new ArrayList<>();
         for (TransactionList transaction : mTransactionList) {
-            int percentage = Integer.parseInt(transaction.getTransactionAmount());
+            int percentage = Integer.parseInt(transaction.getTransactionCombinedAmount() == null ? transaction.getTransactionAmount() : transaction.getTransactionCombinedAmount());
             double percentageFloat = ((double) percentage / mTotal) * 100;
             String label = transaction.getTransactionCategoryType();
             entries.add(new PieEntry((float) percentageFloat, label));

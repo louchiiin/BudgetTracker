@@ -52,12 +52,15 @@ public class TransactionItemAdapter extends RecyclerView.Adapter<TransactionItem
             public void onClick(View view) {
                 AddItemFragment addItemFragment = new AddItemFragment();
                 addItemFragment.setArguments(AddItemFragment.createArguments(
+                        true,
                         mTransactionType,
                         transactionList.getTransactionDate(),
                         transactionList.getTransactionId(),
                         transactionList.getTransactionAccountType(),
                         transactionList.getTransactionCategoryType(),
-                        transactionList.getTransactionAmount()));
+                        transactionList.getTransactionAmount(),
+                        transactionList.getTransactionNote(),
+                        transactionList.getTransactionDescription()));
                 FragmentUtils.getInstance(((AppCompatActivity) mActivity).getSupportFragmentManager())
                         .showFragment(addItemFragment, R.id.home_content, Constants.ADD_ITEM_FRAGMENT, true);
 
