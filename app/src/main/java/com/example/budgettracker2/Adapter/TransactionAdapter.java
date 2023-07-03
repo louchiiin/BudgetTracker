@@ -13,6 +13,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.budgettracker2.CategoryOptionsManager;
+import com.example.budgettracker2.Constants;
 import com.example.budgettracker2.Fragment.FragmentUtils;
 import com.example.budgettracker2.Fragment.TransactionItemFragment;
 import com.example.budgettracker2.Model.AccountsList;
@@ -86,12 +87,12 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             public void onClick(View view) {
                 TransactionItemFragment transactionItemFragment = new TransactionItemFragment();
                 Bundle args = new Bundle();
-                args.putString("transaction_type", mTransactionType);
+                args.putString(Constants.TRANSACTION_TYPE, mTransactionType);
                 args.putParcelable("transaction_list", transactionList);
                 args.putParcelableArrayList("transaction_array_list", mTransactionListWithOutCombination);
                 transactionItemFragment.setArguments(args);
                 FragmentUtils.getInstance(((AppCompatActivity) mActivity).getSupportFragmentManager())
-                        .showFragment(transactionItemFragment, R.id.home_content, "transaction_item_fragment", true);
+                        .showFragment(transactionItemFragment, R.id.home_content, Constants.TRANSACTION_ITEM_FRAGMENT, true);
             }
         });
     }

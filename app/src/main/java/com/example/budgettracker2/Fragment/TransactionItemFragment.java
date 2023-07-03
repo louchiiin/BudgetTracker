@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.budgettracker2.Adapter.TransactionItemAdapter;
+import com.example.budgettracker2.Constants;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
 import com.google.gson.Gson;
@@ -72,14 +73,14 @@ public class TransactionItemFragment extends Fragment {
             mTransactionListCombinedIds = mTransactionList.getCombinedIds();
             mTransactionArrayList = getArguments().getParcelableArrayList("transaction_array_list");
             Log.d(MY_TAG, "getArgs: " + new Gson().toJson(mTransactionArrayList));
-            mTransactionType = getArguments().getString("transaction_type");
+            mTransactionType = getArguments().getString(Constants.TRANSACTION_TYPE);
         }
     }
 
 
 
     private void initializeRecyclerView() {
-        mAdapter = new TransactionItemAdapter(getActivity(), mTransactionArrayListCombined);
+        mAdapter = new TransactionItemAdapter(getActivity(), mTransactionArrayListCombined, mTransactionType);
         mRecyclerView.setAdapter(mAdapter);
     }
 }

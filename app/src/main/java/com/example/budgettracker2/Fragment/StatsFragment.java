@@ -37,8 +37,8 @@ import java.util.Locale;
 
 
 public class StatsFragment extends Fragment {
-    private static final String EXPENSES = "Expenses";
-    private static final String INCOME = "Income";
+    public static final String EXPENSES = "Expenses";
+    public static final String INCOME = "Income";
     private TextView mMonthTitle;
     private View mPreviousMonth;
     private View mNextMonth;

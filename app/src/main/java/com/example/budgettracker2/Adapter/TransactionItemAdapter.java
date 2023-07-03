@@ -1,6 +1,7 @@
 package com.example.budgettracker2.Adapter;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,9 +9,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.budgettracker2.Constants;
+import com.example.budgettracker2.Fragment.AddItemFragment;
+import com.example.budgettracker2.Fragment.FragmentUtils;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
 
@@ -19,11 +24,13 @@ import java.util.ArrayList;
 public class TransactionItemAdapter extends RecyclerView.Adapter<TransactionItemAdapter.TransactionItemHolder>{
     private Activity mActivity;
     private ArrayList<?> mDataList;
+    private String mTransactionType;
 
     //create a constructor for the adapter
-    public TransactionItemAdapter(Activity activity, ArrayList<?> list) {
+    public TransactionItemAdapter(Activity activity, ArrayList<?> list, String transactionType) {
         this.mActivity = activity;
         this.mDataList = list;
+        this.mTransactionType = transactionType;
     }
 
     @NonNull
@@ -43,7 +50,17 @@ public class TransactionItemAdapter extends RecyclerView.Adapter<TransactionItem
         holder.mItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("LOUCHIIIN" , transactionList.getTransactionId());
+                AddItemFragment addItemFragment = new AddItemFragment();
+                addItemFragment.setArguments(AddItemFragment.createArguments(
+                        mTransactionType,
+                        transactionList.getTransactionDate(),
+                        transactionList.getTransactionId(),
+                        transactionList.getTransactionAccountType(),
+                        transactionList.getTransactionCategoryType(),
+                        transactionList.getTransactionAmount()));
+                FragmentUtils.getInstance(((AppCompatActivity) mActivity).getSupportFragmentManager())
+                        .showFragment(addItemFragment, R.id.home_content, Constants.ADD_ITEM_FRAGMENT, true);
+
             }
         });
     }

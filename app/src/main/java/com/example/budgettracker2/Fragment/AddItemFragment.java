@@ -85,6 +85,23 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     private TextView mAccountTxtView;
     private TextView mCategoryTxtView;
     private int mSelectedAccount; //0 - From , 1 - To
+    private String mTransactionType;
+    private String mTransactionDate;
+    private String mTransactionId;
+    private String mTransactionAccountType;
+    private String mTransactionCategoryType;
+    private String mTransactionAmount;
+
+    public static Bundle createArguments(String transactionType, String transactionDate, String transactionId, String transactionAccountType, String transactionCategoryType, String transactionAmount) {
+        Bundle args = new Bundle();
+        args.putString(Constants.TRANSACTION_TYPE, transactionType);
+        args.putString(Constants.DATE_TRANSACTION_TYPE, transactionDate);
+        args.putString(Constants.TRANSACTION_ID, transactionId);
+        args.putString(Constants.TRANSACTION_ACCOUNT_TYPE, transactionAccountType);
+        args.putString(Constants.TRANSACTION_CATEGORY_TYPE, transactionCategoryType);
+        args.putString(Constants.TRANSACTION_AMOUNT, transactionAmount);
+        return args;
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -164,7 +181,33 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                 fetchCategory();
             }
         });
+
+        getArgs();
         return mConvertView;
+    }
+
+    private void getArgs() {
+        if(getArguments() != null) {
+            mTransactionType = getArguments().getString(Constants.TRANSACTION_TYPE);
+            mTransactionDate = getArguments().getString(Constants.DATE_TRANSACTION_TYPE);
+            mTransactionId = getArguments().getString(Constants.TRANSACTION_ID);
+            mTransactionAccountType = getArguments().getString(Constants.TRANSACTION_ACCOUNT_TYPE);
+            mTransactionCategoryType = getArguments().getString(Constants.TRANSACTION_CATEGORY_TYPE);
+            mTransactionAmount = getArguments().getString(Constants.TRANSACTION_AMOUNT);
+
+            mDatePickerTextView.setText(mTransactionDate);
+            mSelectAccount.setText(mTransactionAccountType);
+            mSelectCategory.setText(mTransactionCategoryType);
+            mAmountView.setText(mTransactionAmount);
+            if(mTransactionType.equals(StatsFragment.EXPENSES)) {
+                mSelectedTransaction = EnumDeclarations.EXPENSE.getValue();
+            } else if(mTransactionType.equals(StatsFragment.INCOME)) {
+                mSelectedTransaction = EnumDeclarations.INCOME.getValue();
+            } else {
+                mSelectedTransaction = EnumDeclarations.TRANSFER.getValue();
+            }
+            updateButtonBackground();
+        }
     }
 
     private final View.OnFocusChangeListener mOnFocusChangeListener = new View.OnFocusChangeListener() {
