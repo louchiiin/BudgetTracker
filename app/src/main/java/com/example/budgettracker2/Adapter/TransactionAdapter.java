@@ -17,10 +17,8 @@ import com.example.budgettracker2.CategoryOptionsManager;
 import com.example.budgettracker2.Constants;
 import com.example.budgettracker2.Fragment.FragmentUtils;
 import com.example.budgettracker2.Fragment.TransactionItemFragment;
-import com.example.budgettracker2.Model.AccountsList;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -29,12 +27,13 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     private ArrayList<?> mDataList;
     private ArrayList<TransactionList> mTransactionListWithOutCombination;
     private String mTransactionType;
+    private TransactionItemFragment.OnRefreshCallback mCallback;
     int mTotal = 0;
-    public TransactionAdapter(Activity activity, ArrayList<?> list, String transactionType, ArrayList<TransactionList> transactionList) {
+    public TransactionAdapter(Activity activity, ArrayList<?> list, String transactionType, ArrayList<TransactionList> transactionList, TransactionItemFragment.OnRefreshCallback callback) {
         this.mActivity = activity;
         this.mDataList = list;
         this.mTransactionListWithOutCombination = transactionList;
-
+        this.mCallback = callback;
         mTransactionType = transactionType;
         calculateTotal();
     }
@@ -84,6 +83,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             @Override
             public void onClick(View view) {
                 TransactionItemFragment transactionItemFragment = new TransactionItemFragment();
+                transactionItemFragment.setOnRefreshCallback(mCallback);
                 Bundle args = new Bundle();
                 args.putString(Constants.TRANSACTION_TYPE, mTransactionType);
                 args.putParcelable("transaction_list", transactionList);

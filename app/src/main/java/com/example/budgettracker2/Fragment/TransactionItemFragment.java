@@ -20,8 +20,17 @@ import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
-public class TransactionItemFragment extends Fragment {
-    
+public class TransactionItemFragment extends Fragment implements AddItemFragment.OnItemUpdateListener{
+
+    public interface OnRefreshCallback {
+        void onRefreshPage();
+    }
+
+    public void setOnRefreshCallback(OnRefreshCallback refreshCallback) {
+        mOnRefreshCallback = refreshCallback;
+    }
+
+    private OnRefreshCallback mOnRefreshCallback;
     private TransactionItemAdapter mAdapter;
     private RecyclerView mRecyclerView;
     private ArrayList<TransactionList> mTransactionArrayList;
@@ -30,6 +39,7 @@ public class TransactionItemFragment extends Fragment {
 
     private TransactionList mTransactionList;
     private String mTransactionType;
+    private boolean mIsUpdate = false;
 
     public TransactionItemFragment() {
         // Required empty public constructor
@@ -80,7 +90,25 @@ public class TransactionItemFragment extends Fragment {
 
 
     private void initializeRecyclerView() {
-        mAdapter = new TransactionItemAdapter(getActivity(), mTransactionArrayListCombined, mTransactionType);
+        mAdapter = new TransactionItemAdapter(getActivity(), mTransactionArrayListCombined, mTransactionType, this);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    @Override
+    public void onItemUpdate(int position, String amount, String account, String category, String note, String description) {
+        mTransactionArrayListCombined.get(position).setTransactionAmount(amount);
+        mTransactionArrayListCombined.get(position).setTransactionAccountType(account);
+        mTransactionArrayListCombined.get(position).setTransactionCategoryType(category);
+        mTransactionArrayListCombined.get(position).setTransactionNote(note);
+        mTransactionArrayListCombined.get(position).setTransactionDescription(description);
+        mAdapter.notifyItemChanged(position);
+
+        if(mOnRefreshCallback != null) {
+            mOnRefreshCallback.onRefreshPage();
+        }
+
+        if(getActivity() != null) {
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
     }
 }

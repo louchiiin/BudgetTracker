@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class StatsFragment extends Fragment {
+public class StatsFragment extends Fragment implements TransactionItemFragment.OnRefreshCallback{
     public static final String EXPENSES = "Expenses";
     public static final String INCOME = "Income";
     private TextView mMonthTitle;
@@ -105,7 +105,7 @@ public class StatsFragment extends Fragment {
     }
 
     private void initializeRecyclerView() {
-        mAdapter = new TransactionAdapter(getActivity(), mTransactionList, mTransactionType, mCombinedTransactionList);
+        mAdapter = new TransactionAdapter(getActivity(), mTransactionList, mTransactionType, mCombinedTransactionList, this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -286,6 +286,12 @@ public class StatsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        fetchList();
+    }
+
+    @Override
+    public void onRefreshPage() {
+        Log.d("LOUCHIIIN", "onRefreshPage: ");
         fetchList();
     }
 }

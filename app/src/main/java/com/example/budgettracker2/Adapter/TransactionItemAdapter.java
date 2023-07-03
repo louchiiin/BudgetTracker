@@ -1,6 +1,7 @@
 package com.example.budgettracker2.Adapter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,9 +26,11 @@ public class TransactionItemAdapter extends RecyclerView.Adapter<TransactionItem
     private Activity mActivity;
     private ArrayList<?> mDataList;
     private String mTransactionType;
+    private AddItemFragment.OnItemUpdateListener mListener;
 
     //create a constructor for the adapter
-    public TransactionItemAdapter(Activity activity, ArrayList<?> list, String transactionType) {
+    public TransactionItemAdapter(Activity activity, ArrayList<?> list, String transactionType, AddItemFragment.OnItemUpdateListener onItemUpdateListener) {
+        this.mListener = onItemUpdateListener;
         this.mActivity = activity;
         this.mDataList = list;
         this.mTransactionType = transactionType;
@@ -51,7 +54,9 @@ public class TransactionItemAdapter extends RecyclerView.Adapter<TransactionItem
             @Override
             public void onClick(View view) {
                 AddItemFragment addItemFragment = new AddItemFragment();
+                addItemFragment.setOnItemUpdateListener(mListener);
                 addItemFragment.setArguments(AddItemFragment.createArguments(
+                        holder.getAdapterPosition(),
                         true,
                         mTransactionType,
                         transactionList.getTransactionDate(),
