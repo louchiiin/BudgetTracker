@@ -20,6 +20,7 @@ import com.example.budgettracker2.R;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class HomeFragment extends Fragment {
@@ -101,6 +102,11 @@ public class HomeFragment extends Fragment {
     }
 
     private void initializeAdapter() {
+        List<String> items = new ArrayList<>();
+        // Add your items to the list
+        items.add("Item 1");
+        items.add("Item 2");
+        items.add("Item 3");
         mAdapter = new HomeAdapter(getActivity(), mTransactionList);
         mRecyclerView.setAdapter(mAdapter);
     }

@@ -13,9 +13,10 @@ import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final int VIEW_TYPE_GROUP_HEADER = 0;
+    private static final int VIEW_TYPE_TITLE = 0;
     private static final int VIEW_TYPE_ITEM = 1;
     private Activity mActivity;
     private ArrayList<TransactionList> mDataList;
@@ -25,22 +26,29 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         this.mDataList = list;
     }
 
+    @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(mActivity);
-        View view = inflater.inflate(R.layout.home_selection_layout, parent, false);
-        return new ViewHolder(view);
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (viewType == VIEW_TYPE_TITLE) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.group_header_layout, parent, false);
+            return new TitleViewHolder(view);
+        } else {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.home_selection_layout, parent, false);
+            return new ItemViewHolder(view);
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        Object item = mDataList.get(position);
-
-        ViewHolder itemViewHolder = (ViewHolder) holder;
-        TransactionList transaction = (TransactionList) item;
-        itemViewHolder.mAccountNameView.setText(transaction.getTransactionAccountType());
-        itemViewHolder.mAmountView.setText(transaction.getTransactionAmount());
-        itemViewHolder.mCategoryView.setText(transaction.getTransactionCategoryType());
+        if (holder instanceof TitleViewHolder) {
+            TransactionList item = mDataList.get(position);
+            ((TitleViewHolder) holder).titleTextView.setText(item.getTransactionDate());
+        } else if (holder instanceof ItemViewHolder) {
+            TransactionList item = mDataList.get(position - 1); // Subtract 1 to account for the title view
+            ((ItemViewHolder) holder).mCategoryView.setText(item.getTransactionCategoryType());
+            ((ItemViewHolder) holder).mAccountView.setText(item.getTransactionAccountType());
+            ((ItemViewHolder) holder).mAmountView.setText(item.getTransactionAmount());
+        }
     }
 
     @Override
@@ -48,16 +56,31 @@ public class HomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return mDataList != null ? mDataList.size() : 0;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView mAccountNameView;
-        private TextView mAmountView;
-        private TextView mCategoryView;
+    @Override
+    public int getItemViewType(int position) {
+        return position == 0 ? VIEW_TYPE_TITLE : VIEW_TYPE_ITEM;
+    }
 
-        public ViewHolder(View itemView) {
+
+    public static class TitleViewHolder extends RecyclerView.ViewHolder {
+        public TextView titleTextView;
+
+        public TitleViewHolder(View itemView) {
             super(itemView);
-            mAccountNameView = itemView.findViewById(R.id.account_textView);
-            mAmountView = itemView.findViewById(R.id.amount_textView);
+            titleTextView = itemView.findViewById(R.id.date_textView);
+        }
+    }
+
+    public static class ItemViewHolder extends RecyclerView.ViewHolder {
+        public TextView mCategoryView;
+        public TextView mAccountView;
+        public TextView mAmountView;
+
+        public ItemViewHolder(View itemView) {
+            super(itemView);
             mCategoryView = itemView.findViewById(R.id.category_textView);
+            mAccountView = itemView.findViewById(R.id.account_textView);
+            mAmountView = itemView.findViewById(R.id.amount_textView);
         }
     }
 }
