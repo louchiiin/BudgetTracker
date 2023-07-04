@@ -14,6 +14,9 @@ import com.example.budgettracker2.Adapter.HomeAdapter;
 import com.example.budgettracker2.CategoryOptionsManager;
 import com.example.budgettracker2.Constants;
 import com.example.budgettracker2.Interfaces.ManagerCallback;
+import com.example.budgettracker2.Model.Group;
+import com.example.budgettracker2.Model.GroupedValueItem;
+import com.example.budgettracker2.Model.HeaderItem;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
 
@@ -102,12 +105,25 @@ public class HomeFragment extends Fragment {
     }
 
     private void initializeAdapter() {
-        List<String> items = new ArrayList<>();
-        // Add your items to the list
-        items.add("Item 1");
-        items.add("Item 2");
-        items.add("Item 3");
-        mAdapter = new HomeAdapter(getActivity(), mTransactionList);
+        List<Group> groups = new ArrayList<>();
+        List<String> birdValues = new ArrayList<>();
+        birdValues.add("Bird 1");
+        birdValues.add("Bird 2");
+        birdValues.add("Bird 3");
+        groups.add(new Group("Types of Birds", birdValues));
+
+        List<String> fishValues = new ArrayList<>();
+        fishValues.add("Fish 1");
+        fishValues.add("Fish 2");
+        fishValues.add("Fish 3");
+        groups.add(new Group("Types of Fish", fishValues));
+
+        List<String> treeValues = new ArrayList<>();
+        treeValues.add("Tree 1");
+        treeValues.add("Tree 2");
+        treeValues.add("Tree 3");
+        groups.add(new Group("Types of Trees", treeValues));
+        mAdapter = new HomeAdapter(groups);
         mRecyclerView.setAdapter(mAdapter);
     }
 
