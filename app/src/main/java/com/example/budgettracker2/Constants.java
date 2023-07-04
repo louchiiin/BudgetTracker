@@ -20,4 +20,6 @@ public class Constants {
     public static String HOME_BASE_FRAGMENT = "home_base_fragment";
     public static String ADD_ITEM_FRAGMENT = "add_item_fragment";
     public static String TRANSACTION_ITEM_FRAGMENT = "transaction_item_fragment";
+    public static int AMOUNT_ONLY_SORT = 0;
+    public static int DATE_ONLY_SORT = 1;
 }

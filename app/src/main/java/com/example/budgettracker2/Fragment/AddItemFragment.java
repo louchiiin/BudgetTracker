@@ -1,7 +1,5 @@
 package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -16,7 +14,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -197,10 +194,8 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
         mNoteView.setOnFocusChangeListener(mOnFocusChangeListener);
 
         mTransactions = new TransactionList();
-        Log.d(MY_TAG, "onCreateView: ");
         mLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
-                Log.d(MY_TAG, "registerForActivityResult: result ok");
                 fetchAccount();
                 fetchCategory();
             }
@@ -374,26 +369,21 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     String amountText = mAmountView.getText().toString().trim();
 
                     if(datePickerText.equals("mm/dd/yyyy")) {
-                        Log.d(MY_TAG, "date is blank");
                         mFullLoadingView.setVisibility(View.GONE);
                     }
                     if (selectAccountText.equals("")) {
-                        Log.d(MY_TAG, "account is required");
                         mSelectAccount.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_focused, null));
                         mFullLoadingView.setVisibility(View.GONE);
                     }
                     if (selectCategoryText.equals("")) {
-                        Log.d(MY_TAG, "category is required");
                         mSelectCategory.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_focused, null));
                         mFullLoadingView.setVisibility(View.GONE);
                     }
                     if (amountText.equals("")) {
-                        Log.d(MY_TAG, "amount is required");
                         mAmountView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_focused, null));
                         mFullLoadingView.setVisibility(View.GONE);
                     }
                     if(mSelectedTransaction == 0) {
-                        Log.d(MY_TAG, "select a transaction type");
                         mFullLoadingView.setVisibility(View.GONE);
                     }
                     if(mSelectedTransaction != 0 && !datePickerText.equals("mm/dd/yyyy") && !selectAccountText.equals("")
@@ -408,7 +398,6 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                 }
                 case R.id.continue_button: {
                     //should next
-                    Log.d(MY_TAG, "continue");
                     break;
                 }
             }
@@ -516,7 +505,6 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                         // Data successfully saved
                         mFullLoadingView.setVisibility(View.GONE);
                         clearFields(true);
-                        Log.d(MY_TAG, "Successfully Saved");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -524,7 +512,6 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     public void onFailure(@NonNull Exception e) {
                         // An error occurred while saving the data
                         mFullLoadingView.setVisibility(View.GONE);
-                        Log.d(MY_TAG, "Failure! Did not saved successfully");
                     }
                 });
     }

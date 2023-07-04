@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         if(mEmailTextView != null && mPasswordTextView != null) {
             String email = mEmailTextView.getText().toString().trim();
             String password = mPasswordTextView.getText().toString().trim();
-            Log.d(MY_TAG, "email and pass " + email + " " + password);
             String emailRegex = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,})+$";
 
             // Create a Pattern object with the emailRegex
@@ -133,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
 
                                 } else {
                                     // If sign in fails, display a message to the user.
-                                    Log.w(MY_TAG, "signInWithEmail:failure", task.getException());
                                     Toast.makeText(MainActivity.this, "Authentication failed.",
                                             Toast.LENGTH_SHORT).show();
                                 }

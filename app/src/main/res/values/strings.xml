@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">BudgetTracker2</string>
+    <string name="app_name">BudgetTracker</string>
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
     <string name="home_title">Home</string>
@@ -16,6 +16,7 @@
     <string name="common_add">Add</string>
     <string name="statistics_title">Statistics</string>
     <string name="update">Update</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="weekly_selection">Weekly</string>
+    <string name="monthly_selection">Monthly</string>
+    <string name="daily_selection">Daily</string>
 </resources>

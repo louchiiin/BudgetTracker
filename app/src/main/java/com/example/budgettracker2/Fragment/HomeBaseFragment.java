@@ -1,7 +1,5 @@
 package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,7 +10,6 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -74,7 +71,6 @@ public class HomeBaseFragment extends Fragment implements HomeActivity.TextUpdat
                         break;
                     case R.id.menu_logout:
                         // Handle click on menu item 3
-                        Log.d(MY_TAG, "menu_logout");
                         if(getActivity() != null) {
                             new AlertDialog.Builder(getActivity())
                                     .setTitle("Alert")
@@ -127,14 +123,12 @@ public class HomeBaseFragment extends Fragment implements HomeActivity.TextUpdat
         public void onClick(View view) {
             switch(view.getId()){
                 case R.id.actionBar_open_sideMenu: {
-                    Log.d(MY_TAG, "sidemenu");
                     if(mSideMenu != null && mNavigationView != null) {
                         mSideMenu.openDrawer(mNavigationView);
                     }
                     break;
                 }
                 case R.id.actionBar_add: {
-                    Log.d(MY_TAG, "add");
                     if(mFragmentUtils != null) {
                         mFragmentUtils.showFragment(new AddItemFragment(), R.id.home_content, Constants.ADD_ITEM_FRAGMENT, true);
                     }
@@ -158,7 +152,6 @@ public class HomeBaseFragment extends Fragment implements HomeActivity.TextUpdat
     }
 
     public void onBack(){
-        Log.d(MY_TAG, "onBack: ");
         mAddButton.setVisibility(View.VISIBLE);
     }
 

@@ -1,14 +1,12 @@
 package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
-
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.budgettracker2.Adapter.TransactionAdapter;
 import com.example.budgettracker2.CategoryOptionsManager;
+import com.example.budgettracker2.Constants;
 import com.example.budgettracker2.Interfaces.ManagerCallback;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
@@ -28,7 +27,6 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
-import com.google.gson.Gson;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -111,7 +109,7 @@ public class StatsFragment extends Fragment implements TransactionItemFragment.O
 
     private void fetchList() {
         mLoadingView.setVisibility(View.VISIBLE);
-        CategoryOptionsManager.getInstance().requestFetchTransaction(mTransactionType, mFormattedFirstDay, mFormattedLastDay, new ManagerCallback() {
+        CategoryOptionsManager.getInstance().requestFetchTransaction(Constants.AMOUNT_ONLY_SORT, mTransactionType, mFormattedFirstDay, mFormattedLastDay, new ManagerCallback() {
             @Override
             public void onFinish() {
                 mLoadingView.setVisibility(View.GONE);
@@ -182,13 +180,11 @@ public class StatsFragment extends Fragment implements TransactionItemFragment.O
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.stats_previous_month:
-                    Log.d(MY_TAG, "onClick: previous month");
                     mCalendar.add(Calendar.MONTH, -1);
                     updateMonthAndYear();
                     fetchList();
                     break;
                 case R.id.stats_next_month:
-                    Log.d(MY_TAG, "onClick: next month");
                     mCalendar.add(Calendar.MONTH, 1);
                     updateMonthAndYear();
                     fetchList();
@@ -251,7 +247,7 @@ public class StatsFragment extends Fragment implements TransactionItemFragment.O
         PieDataSet dataSet = new PieDataSet(entries, "TransactionList");
         dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
         dataSet.setSliceSpace(2f);
-        dataSet.setValueTextSize(16f); // Set the text size to 14
+        dataSet.setValueTextSize(16f); // Set the text size
         dataSet.setValueTextColor(getResources().getColor(R.color.white)); // Set the text color (optional)
 
         PieData data = new PieData(dataSet);
@@ -259,7 +255,7 @@ public class StatsFragment extends Fragment implements TransactionItemFragment.O
         data.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return String.format("%.2f%%", value); // Customize value formatting
+                return String.format("%.0f%%", value); // Customize value formatting
             }
 
         });
@@ -291,7 +287,6 @@ public class StatsFragment extends Fragment implements TransactionItemFragment.O
 
     @Override
     public void onRefreshPage() {
-        Log.d("LOUCHIIIN", "onRefreshPage: ");
         fetchList();
     }
 }

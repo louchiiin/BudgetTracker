@@ -1,13 +1,10 @@
 package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
-
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +79,6 @@ public class TransactionItemFragment extends Fragment implements AddItemFragment
             mTransactionListCombinedIds = new ArrayList<String>();
             mTransactionListCombinedIds = mTransactionList.getCombinedIds();
             mTransactionArrayList = getArguments().getParcelableArrayList("transaction_array_list");
-            Log.d(MY_TAG, "getArgs: " + new Gson().toJson(mTransactionArrayList));
             mTransactionType = getArguments().getString(Constants.TRANSACTION_TYPE);
         }
     }

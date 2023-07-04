@@ -1,7 +1,5 @@
 package com.example.budgettracker2;
 
-import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
-
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -18,9 +16,12 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -173,7 +174,7 @@ public class CategoryOptionsManager {
         });
     }
 
-    public void requestFetchTransaction(String type, String startDate, String endDate, ManagerCallback callback) {
+    public void requestFetchTransaction(int sort, String type, String startDate, String endDate, ManagerCallback callback) {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("Transaction/" + type);
 
         Query query = databaseReference.orderByChild("transaction_date").startAt(startDate).endAt(endDate);
@@ -198,15 +199,34 @@ public class CategoryOptionsManager {
 
                     // Add the transaction to the ArrayList
                     mTransactionList.add(transaction);
-                    // Sort the list based on amount
-                    Collections.sort(mTransactionList, new Comparator<TransactionList>() {
-                        @Override
-                        public int compare(TransactionList t1, TransactionList t2) {
-                            //sorting from highest to lowest
-                            return Double.compare(Double.parseDouble(t2.getTransactionAmount()), Double.parseDouble(t1.getTransactionAmount()));
-                        }
 
-                    });
+                    //sorting for mTransactionList
+                    if(sort == Constants.AMOUNT_ONLY_SORT) {
+                        Collections.sort(mTransactionList, new Comparator<TransactionList>() {
+                            @Override
+                            public int compare(TransactionList t1, TransactionList t2) {
+                                //sorting from highest to lowest
+                                return Double.compare(Double.parseDouble(t2.getTransactionAmount()), Double.parseDouble(t1.getTransactionAmount()));
+                            }
+
+                        });
+                    } else if(sort == Constants.DATE_ONLY_SORT) {
+                        Collections.sort(mTransactionList, new Comparator<TransactionList>() {
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("mm/dd/yyyy");
+
+                            @Override
+                            public int compare(TransactionList item1, TransactionList item2) {
+                                try {
+                                    Date date1 = dateFormat.parse(item1.getTransactionDate());
+                                    Date date2 = dateFormat.parse(item2.getTransactionDate());
+                                    return date2.compareTo(date1); // Descending order
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+                                return 0;
+                            }
+                        });
+                    }
                 }
 
 

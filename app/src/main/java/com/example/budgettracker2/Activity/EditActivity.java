@@ -127,7 +127,6 @@ public class EditActivity extends AppCompatActivity implements EditAdapter.OnUpd
             mCategoryOptionsManager.requestFetchCategory(new ManagerCallback() {
                 @Override
                 public void onFinish() {
-                    Log.d("LOUCHIIIN", "onFinish: Category " + new Gson().toJson(mCategoryOptionsManager.mCategoriesList));
                     initializeRecyclerViewAdapter();
                 }
 
@@ -140,7 +139,6 @@ public class EditActivity extends AppCompatActivity implements EditAdapter.OnUpd
             mCategoryOptionsManager.requestFetchAccount(new ManagerCallback() {
                 @Override
                 public void onFinish() {
-                    Log.d("LOUCHIIIN", "onFinish: Accounts " + new Gson().toJson(mCategoryOptionsManager.mAccountsList));
                     initializeRecyclerViewAdapter();
                 }
 
@@ -154,7 +152,6 @@ public class EditActivity extends AppCompatActivity implements EditAdapter.OnUpd
 
     @Override
     public void onUpdate() {
-        Log.d("LOUCHIIIN", "onUpdate: ");
         mLoadingView.setVisibility(View.GONE);
         initializeRecyclerViewAdapter();
     }
