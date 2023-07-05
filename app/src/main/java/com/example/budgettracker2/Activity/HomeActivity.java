@@ -136,11 +136,11 @@ public class HomeActivity extends AppCompatActivity {
             mHomeBaseFragment = (HomeBaseFragment) homeBaseFragment;
         }
 
-        if (count == 0 && !mHomeBaseFragment.isSideMenuOpen()) {
+        if (count == 0 && mHomeBaseFragment != null && !mHomeBaseFragment.isSideMenuOpen()) {
             if(!mIsMenuTapped) {
                 createDialogExit();
             }
-        } else if(mHomeBaseFragment.isSideMenuOpen()) {
+        } else if(mHomeBaseFragment != null && mHomeBaseFragment.isSideMenuOpen()) {
             mHomeBaseFragment.closeSideMenu();
         } else {
             getSupportFragmentManager().popBackStack();

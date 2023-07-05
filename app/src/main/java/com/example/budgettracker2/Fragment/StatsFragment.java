@@ -225,7 +225,8 @@ public class StatsFragment extends Fragment implements TransactionItemFragment.O
         mLastDayOfTheMonth = mCalendar.get(Calendar.DAY_OF_MONTH);
 
         String formattedMonth = String.format(Locale.getDefault(),"%02d", mMonth);
-        mFormattedFirstDay = formattedMonth + "/" + mFirstDayOfTheMonth + "/" + mYear;
+        String formattedDay = String.format(Locale.getDefault(),"%02d", mFirstDayOfTheMonth);
+        mFormattedFirstDay = formattedMonth + "/" + formattedDay + "/" + mYear;
         mFormattedLastDay = formattedMonth + "/" + mLastDayOfTheMonth + "/" + mYear;
 
         fetchList();

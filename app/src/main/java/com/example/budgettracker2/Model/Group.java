@@ -2,11 +2,11 @@ package com.example.budgettracker2.Model;
 
 import java.util.List;
 
-public class Group {
+public class Group extends TransactionList {
     private String groupName;
-    private List<String> groupValues;
+    private List<TransactionList> groupValues;
 
-    public Group(String groupName, List<String> groupValues) {
+    public Group(String groupName, List<TransactionList> groupValues) {
         this.groupName = groupName;
         this.groupValues = groupValues;
     }
@@ -15,7 +15,7 @@ public class Group {
         return groupName;
     }
 
-    public List<String> getGroupValues() {
+    public List<TransactionList> getGroupValues() {
         return groupValues;
     }
 }

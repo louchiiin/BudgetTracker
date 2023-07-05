@@ -106,23 +106,12 @@ public class HomeFragment extends Fragment {
 
     private void initializeAdapter() {
         List<Group> groups = new ArrayList<>();
-        List<String> birdValues = new ArrayList<>();
-        birdValues.add("Bird 1");
-        birdValues.add("Bird 2");
-        birdValues.add("Bird 3");
-        groups.add(new Group("Types of Birds", birdValues));
-
-        List<String> fishValues = new ArrayList<>();
-        fishValues.add("Fish 1");
-        fishValues.add("Fish 2");
-        fishValues.add("Fish 3");
-        groups.add(new Group("Types of Fish", fishValues));
-
-        List<String> treeValues = new ArrayList<>();
-        treeValues.add("Tree 1");
-        treeValues.add("Tree 2");
-        treeValues.add("Tree 3");
-        groups.add(new Group("Types of Trees", treeValues));
+        for (TransactionList list : mTransactionList) {
+            ArrayList<TransactionList> transactionList = new ArrayList<>();
+            transactionList.add(list);
+            Group group = new Group(list.getTransactionDate(), transactionList);
+            groups.add(group);
+        }
         mAdapter = new HomeAdapter(groups);
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -188,7 +177,8 @@ public class HomeFragment extends Fragment {
         mLastDayOfTheMonth = mCalendar.get(Calendar.DAY_OF_MONTH);
 
         String formattedMonth = String.format(Locale.getDefault(),"%02d", mMonth);
-        mFormattedFirstDay = formattedMonth + "/" + mFirstDayOfTheMonth + "/" + mYear;
+        String formattedDay = String.format(Locale.getDefault(),"%02d", mFirstDayOfTheMonth);
+        mFormattedFirstDay = formattedMonth + "/" + formattedDay + "/" + mYear;
         mFormattedLastDay = formattedMonth + "/" + mLastDayOfTheMonth + "/" + mYear;
 
     }
