@@ -62,20 +62,17 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser != null) {
-            Log.d(MY_TAG, "test");
             Intent intent = new Intent(getApplicationContext(), HomeActivity.class);
             intent.putExtra(FIREBASE_USER_ID, currentUser.getUid());
             intent.putExtra(FIREBASE_USER_EMAIL, currentUser.getEmail());
             startActivity(intent);
             finish();
         }
-        Log.d(MY_TAG, "onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(MY_TAG, "onResume");
     }
 
     private View.OnClickListener mListener = new View.OnClickListener() {
@@ -95,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
         if(mEmailTextView != null && mPasswordTextView != null) {
             String email = mEmailTextView.getText().toString().trim();
             String password = mPasswordTextView.getText().toString().trim();
-            Log.d(MY_TAG, "email and pass " + email + " " + password);
             String emailRegex = "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,})+$";
 
             // Create a Pattern object with the emailRegex
@@ -136,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
 
                                 } else {
                                     // If sign in fails, display a message to the user.
-                                    Log.w(MY_TAG, "signInWithEmail:failure", task.getException());
                                     Toast.makeText(MainActivity.this, "Authentication failed.",
                                             Toast.LENGTH_SHORT).show();
                                 }

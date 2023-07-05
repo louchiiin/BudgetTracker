@@ -1,7 +1,5 @@
 package com.example.budgettracker2.Adapter;
 
-import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
-
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
@@ -148,7 +146,6 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.ViewHolder>{
         holder.mCancelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d(MY_TAG, "cancel position: " + holder.getAdapterPosition());
                 isUpdating(false, holder);
             }
         });
@@ -169,7 +166,6 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.ViewHolder>{
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Log.d("LOUCHIIIN", "onComplete: ");
                             if (mOnUpdateListener != null) {
                                 mOnUpdateListener.onUpdate();
                             }

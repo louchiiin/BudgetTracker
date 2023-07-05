@@ -1,7 +1,5 @@
 package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -16,7 +14,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +34,10 @@ import com.example.budgettracker2.Model.CategoryList;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
 import com.github.ybq.android.spinkit.SpinKitView;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -48,6 +47,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class AddItemFragment extends Fragment implements DatePickerDialogFragment.OnSelectedDate{
     private View mConvertView;
@@ -85,6 +85,44 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
     private TextView mAccountTxtView;
     private TextView mCategoryTxtView;
     private int mSelectedAccount; //0 - From , 1 - To
+    private boolean mIsUpdate = false;
+    private int mListPosition;
+    private String mTransactionType;
+    private String mTransactionDate;
+    private String mTransactionId;
+    private String mTransactionAccountType;
+    private String mTransactionCategoryType;
+    private String mTransactionAmount;
+    private String mTransactionNote;
+    private String mTransactionDescription;
+
+    public interface OnItemUpdateListener {
+        void onItemUpdate(int position, String amount, String account, String category, String note, String description);
+    }
+
+    public OnItemUpdateListener mOnItemUpdateCallback;
+
+    public void setOnItemUpdateListener(OnItemUpdateListener onItemUpdateListener) {
+        this.mOnItemUpdateCallback = onItemUpdateListener;
+    }
+
+    public static Bundle createArguments(int position, boolean isUpdate, String transactionType, String transactionDate,
+                                         String transactionId, String transactionAccountType,
+                                         String transactionCategoryType, String transactionAmount,
+                                         String transactionNote, String transactionDescription) {
+        Bundle args = new Bundle();
+        args.putInt("list_position", position);
+        args.putBoolean(Constants.TRANSACTION_UPDATE, isUpdate);
+        args.putString(Constants.TRANSACTION_TYPE, transactionType);
+        args.putString(Constants.DATE_TRANSACTION_TYPE, transactionDate);
+        args.putString(Constants.TRANSACTION_ID, transactionId);
+        args.putString(Constants.TRANSACTION_ACCOUNT_TYPE, transactionAccountType);
+        args.putString(Constants.TRANSACTION_CATEGORY_TYPE, transactionCategoryType);
+        args.putString(Constants.TRANSACTION_AMOUNT, transactionAmount);
+        args.putString(Constants.TRANSACTION_NOTE, transactionNote);
+        args.putString(Constants.TRANSACTION_DESCRIPTION, transactionDescription);
+        return args;
+    }
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -156,15 +194,46 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
         mNoteView.setOnFocusChangeListener(mOnFocusChangeListener);
 
         mTransactions = new TransactionList();
-        Log.d(MY_TAG, "onCreateView: ");
         mLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
             if (result.getResultCode() == Activity.RESULT_OK) {
-                Log.d(MY_TAG, "registerForActivityResult: result ok");
                 fetchAccount();
                 fetchCategory();
             }
         });
+
+        getArgs();
         return mConvertView;
+    }
+
+    private void getArgs() {
+        if(getArguments() != null) {
+            mListPosition = getArguments().getInt("list_position", 0);
+            mIsUpdate = getArguments().getBoolean(Constants.TRANSACTION_UPDATE);
+            mTransactionType = getArguments().getString(Constants.TRANSACTION_TYPE);
+            mTransactionDate = getArguments().getString(Constants.DATE_TRANSACTION_TYPE);
+            mTransactionId = getArguments().getString(Constants.TRANSACTION_ID);
+            mTransactionAccountType = getArguments().getString(Constants.TRANSACTION_ACCOUNT_TYPE);
+            mTransactionCategoryType = getArguments().getString(Constants.TRANSACTION_CATEGORY_TYPE);
+            mTransactionAmount = getArguments().getString(Constants.TRANSACTION_AMOUNT);
+            mTransactionNote = getArguments().getString(Constants.TRANSACTION_NOTE);
+            mTransactionDescription = getArguments().getString(Constants.TRANSACTION_DESCRIPTION);
+
+            mSave.setText(getString(R.string.update));
+            mDatePickerTextView.setText(mTransactionDate);
+            mSelectAccount.setText(mTransactionAccountType);
+            mSelectCategory.setText(mTransactionCategoryType);
+            mAmountView.setText(mTransactionAmount);
+            mNoteView.setText(mTransactionNote);
+            mDescriptionView.setText(mTransactionDescription);
+            if(mTransactionType.equals(StatsFragment.EXPENSES)) {
+                mSelectedTransaction = EnumDeclarations.EXPENSE.getValue();
+            } else if(mTransactionType.equals(StatsFragment.INCOME)) {
+                mSelectedTransaction = EnumDeclarations.INCOME.getValue();
+            } else {
+                mSelectedTransaction = EnumDeclarations.TRANSFER.getValue();
+            }
+            updateButtonBackground();
+        }
     }
 
     private final View.OnFocusChangeListener mOnFocusChangeListener = new View.OnFocusChangeListener() {
@@ -300,42 +369,78 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     String amountText = mAmountView.getText().toString().trim();
 
                     if(datePickerText.equals("mm/dd/yyyy")) {
-                        Log.d(MY_TAG, "date is blank");
                         mFullLoadingView.setVisibility(View.GONE);
                     }
                     if (selectAccountText.equals("")) {
-                        Log.d(MY_TAG, "account is required");
                         mSelectAccount.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_focused, null));
                         mFullLoadingView.setVisibility(View.GONE);
                     }
                     if (selectCategoryText.equals("")) {
-                        Log.d(MY_TAG, "category is required");
                         mSelectCategory.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_focused, null));
                         mFullLoadingView.setVisibility(View.GONE);
                     }
                     if (amountText.equals("")) {
-                        Log.d(MY_TAG, "amount is required");
                         mAmountView.setBackground(ResourcesCompat.getDrawable(getResources(), R.drawable.custom_border_focused, null));
                         mFullLoadingView.setVisibility(View.GONE);
                     }
                     if(mSelectedTransaction == 0) {
-                        Log.d(MY_TAG, "select a transaction type");
                         mFullLoadingView.setVisibility(View.GONE);
                     }
                     if(mSelectedTransaction != 0 && !datePickerText.equals("mm/dd/yyyy") && !selectAccountText.equals("")
                             && !selectCategoryText.equals("") && !amountText.equals("")) {
-                        saveTransaction();
+                        if(mIsUpdate) {
+                            updateTransaction();
+                        } else {
+                            saveTransaction();
+                        }
                     }
                     break;
                 }
                 case R.id.continue_button: {
                     //should next
-                    Log.d(MY_TAG, "continue");
                     break;
                 }
             }
         }
     };
+
+    private void updateTransaction() {
+        DatabaseReference transactionRef = FirebaseDatabase.getInstance().getReference();
+
+        String amount = mAmountView.getText().toString();
+        String account = mSelectAccount.getText().toString();
+        String category = mSelectCategory.getText().toString();
+        String note = mNoteView.getText().toString();
+        String description = mDescriptionView.getText().toString();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put(Constants.TRANSACTION_AMOUNT, amount);
+        updates.put(Constants.TRANSACTION_ACCOUNT_TYPE, account);
+        updates.put(Constants.TRANSACTION_CATEGORY_TYPE, category);
+        updates.put(Constants.DATE_TRANSACTION_TYPE, mTransactionDate);
+        updates.put(Constants.TRANSACTION_NOTE, note);
+        updates.put(Constants.TRANSACTION_DESCRIPTION, description);
+
+        transactionRef.child(getString(R.string.transactions_title))
+                .child(mTransactionType)
+                .child(mTransactionId)
+                .updateChildren(updates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            // Update successful
+                            if (mOnItemUpdateCallback != null) {
+                                mOnItemUpdateCallback.onItemUpdate(mListPosition, amount, account, category, note, description);
+                            }
+                            mFullLoadingView.setVisibility(View.GONE);
+                        } else {
+                            // Update failed
+                            mFullLoadingView.setVisibility(View.GONE);
+                        }
+                    }
+                });
+    }
 
     private void updateButtonBackground() {
         if(mSelectedTransaction == EnumDeclarations.EXPENSE.getValue()) {
@@ -400,7 +505,6 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                         // Data successfully saved
                         mFullLoadingView.setVisibility(View.GONE);
                         clearFields(true);
-                        Log.d(MY_TAG, "Successfully Saved");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -408,7 +512,6 @@ public class AddItemFragment extends Fragment implements DatePickerDialogFragmen
                     public void onFailure(@NonNull Exception e) {
                         // An error occurred while saving the data
                         mFullLoadingView.setVisibility(View.GONE);
-                        Log.d(MY_TAG, "Failure! Did not saved successfully");
                     }
                 });
     }

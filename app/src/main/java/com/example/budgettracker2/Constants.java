@@ -5,6 +5,8 @@ public class Constants {
     public static String CATEGORY_TYPE = "category_type";
 
     //add transaction item
+    public static String TRANSACTION_UPDATE = "transaction_update";
+    public static String TRANSACTION_TYPE = "transaction_type";
     public static String DATE_TRANSACTION_TYPE = "transaction_date";
     public static String TRANSACTION_ID = "transaction_id";
     public static String TRANSACTION_ACCOUNT_TYPE = "transaction_account_type";
@@ -17,4 +19,7 @@ public class Constants {
     public static String HOME_FRAGMENT = "home_fragment";
     public static String HOME_BASE_FRAGMENT = "home_base_fragment";
     public static String ADD_ITEM_FRAGMENT = "add_item_fragment";
+    public static String TRANSACTION_ITEM_FRAGMENT = "transaction_item_fragment";
+    public static int AMOUNT_ONLY_SORT = 0;
+    public static int DATE_ONLY_SORT = 1;
 }

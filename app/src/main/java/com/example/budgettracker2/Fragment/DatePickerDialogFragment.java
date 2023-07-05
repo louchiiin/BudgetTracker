@@ -1,6 +1,5 @@
 package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -12,7 +11,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.DatePicker;
@@ -62,7 +60,6 @@ public class DatePickerDialogFragment extends DialogFragment {
                         Date date = calendar.getTime();
                         SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
                         String formattedDate = formatter.format(date);
-                        Log.d(MY_TAG, "formattedDate " + formattedDate);
                         if(mCallback != null) {
                             mCallback.onSelect(formattedDate);
                         }

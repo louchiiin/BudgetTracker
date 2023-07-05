@@ -1,42 +1,56 @@
 package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
-
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.budgettracker2.CacheManager;
-import com.example.budgettracker2.Activity.HomeActivity;
-import com.example.budgettracker2.Activity.MainActivity;
+import com.example.budgettracker2.Adapter.HomeAdapter;
+import com.example.budgettracker2.CategoryOptionsManager;
 import com.example.budgettracker2.Constants;
+import com.example.budgettracker2.Interfaces.ManagerCallback;
+import com.example.budgettracker2.Model.Group;
+import com.example.budgettracker2.Model.GroupedValueItem;
+import com.example.budgettracker2.Model.HeaderItem;
+import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
-import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
 
-public class HomeFragment extends Fragment implements HomeActivity.TextUpdateListener {
-    private FirebaseAuth mAuth;
-    private DrawerLayout mSideMenu;
-    private NavigationView mNavigationView;
-    private View mConvertView;
-    public ImageView mOpenSideMenu;
-    public ImageView mAddButton;
-    public TextView mHeaderTitle;
-    private FragmentUtils mFragmentUtils;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+
+public class HomeFragment extends Fragment {
+    private final String DAILY_SELECTION = "Daily";
+    private final String WEEKLY_SELECTION = "Weekly";
+    private final String MONTHLY_SELECTION = "Monthly";
+    private TextView mMonthTitle;
+    private View mPreviousMonth;
+    private View mNextMonth;
+    private Calendar mCalendar;
+
+    private TextView mDailyView;
+    private TextView mWeeklyView;
+    private TextView mMonthlyView;
+    private int mYear;
+    private int mMonth;
+    private int mFirstDayOfTheMonth;
+    private int mLastDayOfTheMonth;
+    private String mFormattedFirstDay;
+    private String mFormattedLastDay;
+    private int mOriginalDrawable;
+    private int mClickedDrawable;
+    private String mSelectedType;
+    private ArrayList<TransactionList> mTransactionList;
+    private RecyclerView mRecyclerView;
+    private HomeAdapter mAdapter;
+
     public HomeFragment() {
         // Required empty public constructor
     }
@@ -44,129 +58,128 @@ public class HomeFragment extends Fragment implements HomeActivity.TextUpdateLis
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mConvertView = inflater.inflate(R.layout.fragment_home, container, false);
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        mAuth = FirebaseAuth.getInstance();
-        mSideMenu = (DrawerLayout) mConvertView.findViewById(R.id.home_fragment_layout);
-        mNavigationView = mConvertView.findViewById(R.id.navigation_view);
-        mOpenSideMenu = mConvertView.findViewById(R.id.actionBar_open_sideMenu);
-        mAddButton = mConvertView.findViewById(R.id.actionBar_add);
-        mHeaderTitle = mConvertView.findViewById(R.id.actionBar_title);
+        mMonthTitle = view.findViewById(R.id.month_title);
+        mPreviousMonth = view.findViewById(R.id.previous_month);
+        mNextMonth = view.findViewById(R.id.next_month);
 
-        mHeaderTitle.setText(getString(R.string.home_title));
-        mOpenSideMenu.setOnClickListener(mListener);
-        mAddButton.setOnClickListener(mListener);
-        if(getActivity() != null) {
-            mFragmentUtils = FragmentUtils.getInstance(getActivity().getSupportFragmentManager());
-        }
-        initializedHomeBaseFragment();
+        mDailyView = view.findViewById(R.id.daily_selection);
+        mWeeklyView = view.findViewById(R.id.weekly_selection);
+        mMonthlyView = view.findViewById(R.id.monthly_selection);
+        mRecyclerView = view.findViewById(R.id.recyclerView);
 
-        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+        mOriginalDrawable = R.drawable.custom_button_black_stroke_white_fill;
+        mClickedDrawable = R.drawable.custom_button_black_stroke_red_fill;
+
+        mSelectedType = DAILY_SELECTION;
+        checkSelectedButton();
+        mCalendar = Calendar.getInstance();
+        updateMonthAndYear();
+
+        mNextMonth.setOnClickListener(mOnClickListener);
+        mPreviousMonth.setOnClickListener(mOnClickListener);
+        mDailyView.setOnClickListener(mOnClickListener);
+        mWeeklyView.setOnClickListener(mOnClickListener);
+        mMonthlyView.setOnClickListener(mOnClickListener);
+        fetchList();
+        return view;
+    }
+
+    private void fetchList() {
+        CategoryOptionsManager.getInstance().requestFetchTransaction(Constants.DATE_ONLY_SORT, StatsFragment.EXPENSES, mFormattedFirstDay, mFormattedLastDay, new ManagerCallback() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                int id = item.getItemId();
-                switch (id) {
-                    case R.id.menu_random_1:
-                        // Handle click on menu item 1
-                        break;
-                    case R.id.menu_random_2:
-                        // Handle click on menu item 2
-                        break;
-                    case R.id.menu_logout:
-                        // Handle click on menu item 3
-                        Log.d(MY_TAG, "menu_logout");
-                        if(getActivity() != null) {
-                            new AlertDialog.Builder(getActivity())
-                                    .setTitle("Alert")
-                                    .setMessage("Are you sure you want to exit?")
-                                    .setNegativeButton(android.R.string.no, null)
-                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+            public void onFinish() {
+                mTransactionList = new ArrayList<TransactionList>();
+                mTransactionList = CategoryOptionsManager.getInstance().getTransactionList();
 
-                                        public void onClick(DialogInterface arg0, int arg1) {
-                                            mAuth.signOut();
-                                            Intent intent = new Intent(getActivity(), MainActivity.class);
-                                            startActivity(intent);
-                                            getActivity().finish();
-                                            CacheManager.getInstance(getActivity()).removeCurrentId();
-                                            CacheManager.getInstance(getActivity()).removeCurrentEmail();
-                                        }
-                                    }).create().show();
-                        }
-                        break;
-                    default:
-                        return false;
-                }
-                // Highlight the selected menu item
-                item.setChecked(true);
-                // Close the navigation drawer
-                mSideMenu.closeDrawer(GravityCompat.START);
-                return true;
+                initializeAdapter();
+            }
+
+            @Override
+            public void onError(String error) {
+
             }
         });
-        return mConvertView;
     }
 
-    private void initializedHomeBaseFragment() {
-        if(mFragmentUtils != null) {
-            mFragmentUtils.replaceFragment(new HomeBaseFragment(), R.id.home_content, "home_base_fragment", false);
+    private void initializeAdapter() {
+        List<Group> groups = new ArrayList<>();
+        for (TransactionList list : mTransactionList) {
+            ArrayList<TransactionList> transactionList = new ArrayList<>();
+            transactionList.add(list);
+            Group group = new Group(list.getTransactionDate(), transactionList);
+            groups.add(group);
         }
+        mAdapter = new HomeAdapter(groups);
+        mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void checkFirebaseAuth() {
-        if (mAuth != null && mAuth.getCurrentUser() == null && getActivity() != null) {
-            Intent intent = new Intent(getActivity(), MainActivity.class);
-            startActivity(intent);
-            getActivity().finish();
-            CacheManager.getInstance(getActivity()).removeCurrentId();
-            CacheManager.getInstance(getActivity()).removeCurrentEmail();
-        }
+    private void checkSelectedButton() {
+        int dailyBackgroundResource = mSelectedType.equals(DAILY_SELECTION) ? mClickedDrawable : mOriginalDrawable;
+        int weeklyBackgroundResource = mSelectedType.equals(WEEKLY_SELECTION) ? mClickedDrawable : mOriginalDrawable;
+        int monthlyBackgroundResource = mSelectedType.equals(MONTHLY_SELECTION) ? mClickedDrawable : mOriginalDrawable;
+
+        int dailyTextColor = mSelectedType.equals(DAILY_SELECTION) ? R.color.white : R.color.black;
+        int weeklyTextColor = mSelectedType.equals(WEEKLY_SELECTION) ? R.color.white : R.color.black;
+        int monthlyTextColor = mSelectedType.equals(MONTHLY_SELECTION) ? R.color.white : R.color.black;
+
+        mDailyView.setBackgroundResource(dailyBackgroundResource);
+        mDailyView.setTextColor(getResources().getColor(dailyTextColor));
+        mWeeklyView.setBackgroundResource(weeklyBackgroundResource);
+        mWeeklyView.setTextColor(getResources().getColor(weeklyTextColor));
+        mMonthlyView.setBackgroundResource(monthlyBackgroundResource);
+        mMonthlyView.setTextColor(getResources().getColor(monthlyTextColor));
     }
 
-    private View.OnClickListener mListener = new View.OnClickListener() {
+    private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            switch(view.getId()){
-                case R.id.actionBar_open_sideMenu: {
-                    Log.d(MY_TAG, "sidemenu");
-                    if(mSideMenu != null && mNavigationView != null) {
-                        mSideMenu.openDrawer(mNavigationView);
-                    }
+            switch (view.getId()) {
+                case R.id.previous_month:
+                    mCalendar.add(Calendar.MONTH, -1);
+                    updateMonthAndYear();
                     break;
-                }
-                case R.id.actionBar_add: {
-                    Log.d(MY_TAG, "add");
-                    if(mFragmentUtils != null) {
-                        mFragmentUtils.showFragment(new AddItemFragment(), R.id.home_content, Constants.ADD_ITEM_FRAGMENT, true);
-                    }
-                    mAddButton.setVisibility(View.GONE);
-                    mHeaderTitle.setText(getString(R.string.transactions_title));
+                case R.id.next_month:
+                    mCalendar.add(Calendar.MONTH, 1);
+                    updateMonthAndYear();
                     break;
-                }
+                case R.id.daily_selection:
+                    mSelectedType = DAILY_SELECTION;
+                    checkSelectedButton();
+                    break;
+                case R.id.weekly_selection:
+                    mSelectedType = WEEKLY_SELECTION;
+                    checkSelectedButton();
+                    break;
+                case R.id.monthly_selection:
+                    mSelectedType = MONTHLY_SELECTION;
+                    checkSelectedButton();
+                    break;
             }
         }
     };
 
-    @Override
-    public void onResume() {
-        super.onResume();
+    private void updateMonthAndYear() {
+        SimpleDateFormat formatter = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+        String title = formatter.format(mCalendar.getTime());
+        mMonthTitle.setText(title);
+        mYear = mCalendar.get(Calendar.YEAR);
+        mMonth = mCalendar.get(Calendar.MONTH) + 1;
 
-        checkFirebaseAuth();
-    }
-    @Override
-    public void onUpdateText(String newText) {
-        mHeaderTitle.setText(newText);
-    }
+        // Set the calendar to the first day of the month
+        mCalendar.set(Calendar.DAY_OF_MONTH, 1);
+        mFirstDayOfTheMonth = mCalendar.get(Calendar.DAY_OF_MONTH);
 
-    public void onBack(){
-        Log.d(MY_TAG, "onBack: ");
-        mAddButton.setVisibility(View.VISIBLE);
-    }
+        // Set the calendar to the last day of the month
+        mCalendar.set(Calendar.DAY_OF_MONTH, mCalendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        mLastDayOfTheMonth = mCalendar.get(Calendar.DAY_OF_MONTH);
 
-    public boolean isSideMenuOpen(){
-        return mSideMenu.isDrawerOpen(GravityCompat.START);
-    }
+        String formattedMonth = String.format(Locale.getDefault(),"%02d", mMonth);
+        String formattedDay = String.format(Locale.getDefault(),"%02d", mFirstDayOfTheMonth);
+        mFormattedFirstDay = formattedMonth + "/" + formattedDay + "/" + mYear;
+        mFormattedLastDay = formattedMonth + "/" + mLastDayOfTheMonth + "/" + mYear;
 
-    public void closeSideMenu(){
-        mSideMenu.closeDrawer(GravityCompat.START);
     }
 }

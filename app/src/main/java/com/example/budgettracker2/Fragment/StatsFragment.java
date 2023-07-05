@@ -1,14 +1,12 @@
 package com.example.budgettracker2.Fragment;
 
-import static com.example.budgettracker2.Activity.MainActivity.MY_TAG;
-
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.budgettracker2.Adapter.TransactionAdapter;
 import com.example.budgettracker2.CategoryOptionsManager;
+import com.example.budgettracker2.Constants;
 import com.example.budgettracker2.Interfaces.ManagerCallback;
 import com.example.budgettracker2.Model.TransactionList;
 import com.example.budgettracker2.R;
@@ -36,9 +35,9 @@ import java.util.List;
 import java.util.Locale;
 
 
-public class StatsFragment extends Fragment {
-    private static final String EXPENSES = "Expenses";
-    private static final String INCOME = "Income";
+public class StatsFragment extends Fragment implements TransactionItemFragment.OnRefreshCallback{
+    public static final String EXPENSES = "Expenses";
+    public static final String INCOME = "Income";
     private TextView mMonthTitle;
     private View mPreviousMonth;
     private View mNextMonth;
@@ -54,6 +53,7 @@ public class StatsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private TransactionAdapter mAdapter;
     private ArrayList<TransactionList> mTransactionList;
+    private ArrayList<TransactionList> mCombinedTransactionList;
     private View mExpensesSelection;
     private View mIncomeSelection;
     private ConstraintLayout mNoDataView;
@@ -93,7 +93,6 @@ public class StatsFragment extends Fragment {
 
         mTransactionType = EXPENSES; //on load load expenses
         checkSelectedButton();
-        fetchList();
         updateMonthAndYear();
         mNextMonth.setOnClickListener(mOnClickListener);
         mPreviousMonth.setOnClickListener(mOnClickListener);
@@ -104,21 +103,22 @@ public class StatsFragment extends Fragment {
     }
 
     private void initializeRecyclerView() {
-        mAdapter = new TransactionAdapter(getActivity(), mTransactionList);
+        mAdapter = new TransactionAdapter(getActivity(), mTransactionList, mTransactionType, mCombinedTransactionList, this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
     private void fetchList() {
         mLoadingView.setVisibility(View.VISIBLE);
-        CategoryOptionsManager.getInstance().requestFetchTransaction(mTransactionType, mFormattedFirstDay, mFormattedLastDay, new ManagerCallback() {
+        CategoryOptionsManager.getInstance().requestFetchTransaction(Constants.AMOUNT_ONLY_SORT, mTransactionType, mFormattedFirstDay, mFormattedLastDay, new ManagerCallback() {
             @Override
             public void onFinish() {
                 mLoadingView.setVisibility(View.GONE);
                 mTransactionList = new ArrayList<TransactionList>();
+                mCombinedTransactionList = new ArrayList<TransactionList>();
                 mTransactionList = CategoryOptionsManager.getInstance().getTransactionList();
+                mCombinedTransactionList = CategoryOptionsManager.getInstance().getTransactionList();
                 // Create a new list to store the combined transactions
                 ArrayList<TransactionList> combinedTransactions = new ArrayList<>();
-
                 // Iterate over the transactions
                 for (TransactionList transaction : mTransactionList) {
                     boolean found = false;
@@ -128,7 +128,9 @@ public class StatsFragment extends Fragment {
                         if (transaction.getTransactionCategoryType().equals(combinedTransaction.getTransactionCategoryType())) {
                             // If a transaction with the same name is found, combine them
                             String result = String.valueOf(Integer.parseInt(combinedTransaction.getTransactionAmount()) + Integer.parseInt(transaction.getTransactionAmount()));
-                            combinedTransaction.setTransactionAmount(result);
+                            //add transaction id to combined list
+                            combinedTransaction.setTransactionCombinedAmount(result);
+                            combinedTransaction.getCombinedIds().add(transaction.getTransactionId());
                             found = true;
                             break;
                         }
@@ -136,6 +138,8 @@ public class StatsFragment extends Fragment {
 
                     // If no transaction with the same name was found, add the transaction to the combined list
                     if (!found) {
+                        //add transaction id to combined list
+                        transaction.getCombinedIds().add(transaction.getTransactionId());
                         combinedTransactions.add(transaction);
                     }
                 }
@@ -166,7 +170,7 @@ public class StatsFragment extends Fragment {
     private void calculateTotal() {
         mTotal = 0;
         for (TransactionList transaction : mTransactionList) {
-            int amount = Integer.parseInt(transaction.getTransactionAmount());
+            int amount = Integer.parseInt(transaction.getTransactionCombinedAmount() == null ? transaction.getTransactionAmount() : transaction.getTransactionCombinedAmount());
             mTotal += amount;
         }
     }
@@ -176,13 +180,11 @@ public class StatsFragment extends Fragment {
         public void onClick(View view) {
             switch (view.getId()) {
                 case R.id.stats_previous_month:
-                    Log.d(MY_TAG, "onClick: previous month");
                     mCalendar.add(Calendar.MONTH, -1);
                     updateMonthAndYear();
                     fetchList();
                     break;
                 case R.id.stats_next_month:
-                    Log.d(MY_TAG, "onClick: next month");
                     mCalendar.add(Calendar.MONTH, 1);
                     updateMonthAndYear();
                     fetchList();
@@ -223,8 +225,11 @@ public class StatsFragment extends Fragment {
         mLastDayOfTheMonth = mCalendar.get(Calendar.DAY_OF_MONTH);
 
         String formattedMonth = String.format(Locale.getDefault(),"%02d", mMonth);
-        mFormattedFirstDay = formattedMonth + "/" + mFirstDayOfTheMonth + "/" + mYear;
+        String formattedDay = String.format(Locale.getDefault(),"%02d", mFirstDayOfTheMonth);
+        mFormattedFirstDay = formattedMonth + "/" + formattedDay + "/" + mYear;
         mFormattedLastDay = formattedMonth + "/" + mLastDayOfTheMonth + "/" + mYear;
+
+        fetchList();
     }
 
     private void initializeGraph() {
@@ -233,7 +238,7 @@ public class StatsFragment extends Fragment {
         }
         List<PieEntry> entries = new ArrayList<>();
         for (TransactionList transaction : mTransactionList) {
-            int percentage = Integer.parseInt(transaction.getTransactionAmount());
+            int percentage = Integer.parseInt(transaction.getTransactionCombinedAmount() == null ? transaction.getTransactionAmount() : transaction.getTransactionCombinedAmount());
             double percentageFloat = ((double) percentage / mTotal) * 100;
             String label = transaction.getTransactionCategoryType();
             entries.add(new PieEntry((float) percentageFloat, label));
@@ -243,7 +248,7 @@ public class StatsFragment extends Fragment {
         PieDataSet dataSet = new PieDataSet(entries, "TransactionList");
         dataSet.setColors(ColorTemplate.COLORFUL_COLORS);
         dataSet.setSliceSpace(2f);
-        dataSet.setValueTextSize(16f); // Set the text size to 14
+        dataSet.setValueTextSize(16f); // Set the text size
         dataSet.setValueTextColor(getResources().getColor(R.color.white)); // Set the text color (optional)
 
         PieData data = new PieData(dataSet);
@@ -251,7 +256,7 @@ public class StatsFragment extends Fragment {
         data.setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return String.format("%.2f%%", value); // Customize value formatting
+                return String.format("%.0f%%", value); // Customize value formatting
             }
 
         });
@@ -281,5 +286,8 @@ public class StatsFragment extends Fragment {
         fetchList();
     }
 
-    //create a recyclerview adapter class
+    @Override
+    public void onRefreshPage() {
+        fetchList();
+    }
 }

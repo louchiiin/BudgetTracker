@@ -44,5 +44,11 @@ public class FragmentUtils extends Fragment{
             fragmentTransaction.commit();
         }
     }
+
+    public void backFragment() {
+        if(fragmentManager != null) {
+            fragmentManager.popBackStack();
+        }
+    }
 }
 
